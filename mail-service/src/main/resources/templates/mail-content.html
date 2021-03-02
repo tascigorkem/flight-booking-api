@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+<body>
+
+<table align="left">
+    <tr>
+        <td width="100%">
+            <table width="800">
+
+                <tr>
+                    <td align="center" width="800">
+                        <table cellspacing="16"
+                               style="font-size: 16px; line-height: 150%; color: #001D4A; font-family: sans-serif;"
+                               width="100%;">
+                            <tr>
+                                <td>Hello <span th:text="${fullName}">Jane Doe</span>,</td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    Your recieved message from kafka: <b><span th:text="${productName}">Serenity</span></b>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
