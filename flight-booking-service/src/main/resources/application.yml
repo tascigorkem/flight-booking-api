@@ -1,0 +1,77 @@
+server:
+  port: 8081
+
+eureka:
+  client:
+    # Will get overridden in docker-compose (http://discovery-service:8761/eureka)
+    serviceUrl.defaultZone: http://localhost:8761/eureka
+
+# custom path for api docs
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    operations-sorter: method
+
+spring:
+  profiles.active: @activatedProperties@
+
+  application:
+    name: flight-booking-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flight-booking-db
+    username: postgres
+    password: password
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 5
+
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: postgres
+    hibernate.ddl-auto: create # (create, create-drop, validate, update)
+    show-sql: true
+
+  # kafka properties
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: group_id
+      auto-offset-reset: earliest
+      properties:
+#        spring.json.trusted.packages: "com.tascigorkem.flightbookingservice.dto.kafka"
+        spring.json.trusted.packages: "*"
+        spring.json.add.type.headers: false
+
+# topics
+my-message-topic:
+  name: my-topic
+  num-partitions: 1
+  replication-factor: 1
+  messages-per-request: 10
+
+my-object-topic:
+  name: my-object-topic
+  num-partitions: 1
+  replication-factor: 1
+  messages-per-request: 10
+
+# logging
+logging:
+
+  # level
+  level:
+    org.springframework: ERROR
+    com.tascigorkem.flightbookingservice: DEBUG
+
+  # output to a file
+  file.name: app.log
+  pattern.file: '%d %p %c{1.} [%t] %m%n'
+  pattern.console: '%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n'
+
