@@ -1,0 +1,89 @@
+#Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+version: '3.8'
+
+#Define services
+services:
+
+  #PostgreSQL Database
+  flight-postgress:
+    image: "postgres:13"
+    restart: always
+    container_name: flight-postgress
+    ports:
+      - "5432:5432" #Forward the exposed port 5432 on the container to port 5432 on the host machine
+    volumes:
+      - interview-data:/var/lib/postgresql/data
+
+    #Environment variable for DB name, user and password
+    environment:
+      - POSTGRES_DB: interview-db
+      - POSTGRES_USER: postgres
+      - POSTGRES_PASSWORD: password
+
+  #Eureka Discovery Servera
+  discovery-service:
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    restart: always
+    container_name: discovery-service
+    hostname: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE: docker
+
+  #Interview Service: Spring Boot Application
+  flight-booking-service:
+    #The docker file in flight-booking-service build the jar and provides the docker image with the following name.
+    build:
+      context: ./flight-booking-service
+      dockerfile: Dockerfile
+    restart: always
+    container_name: flight-booking-service
+    hostname: flight-booking-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - flight-postgress
+      - discovery-service
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flight-postgress:5432/interview-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+
+#      - "JAVA_OPTS=
+#        -DEUREKA_SERVER=http://discovery-service:8761/eureka"
+
+  #Mail Service: Spring Boot Application
+  mail-service:
+    #The docker file in mail-service build the jar and provides the docker image with the following name.
+    build:
+      context: ./mail-service
+      dockerfile: Dockerfile
+    restart: always
+    container_name: mail-service
+    hostname: mail-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - discovery-service
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka
+
+  # Mailhog: mail catcher for local debugging
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - 1025:1025 # SMTP server ports
+      - 8025:8025 # Web UI ports
+
+#Volumes for DB data
+volumes:
+  interview-data:

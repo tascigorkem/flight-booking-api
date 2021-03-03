@@ -1,0 +1,45 @@
+#Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+version: '3.8'
+
+#Define services
+services:
+
+  #Filebeat
+  filebeat:
+    image: "docker.elastic.co/beats/filebeat:7.9.3"
+    container_name: filebeat
+    user: root
+    command:
+      - "-e"
+      - "--strict.perms=false"
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - elasticsearch
+
+  #ElasticSearch
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.9.3"
+    container_name: elasticsearch
+    environment:
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "discovery.type=single-node"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  #Kibana
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:7.9.3"
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+#Volumes for Elastic data
+volumes:
+  elasticsearch_data:

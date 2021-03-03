@@ -3,8 +3,7 @@ server:
 
 eureka:
   client:
-    # Will get overridden in docker-compose (http://discovery-service:8761/eureka)
-    serviceUrl.defaultZone: http://localhost:8761/eureka
+    serviceUrl.defaultZone: http://discovery-service:8761/eureka
 
 # custom path for api docs
 springdoc:
@@ -14,15 +13,11 @@ springdoc:
     operations-sorter: method
 
 spring:
-  profiles.active: @activatedProperties@
 
   application:
     name: flight-booking-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/flight-booking-db
-    username: postgres
-    password: password
     hikari:
       connection-timeout: 20000
       maximum-pool-size: 5
@@ -75,3 +70,20 @@ logging:
   pattern.file: '%d %p %c{1.} [%t] %m%n'
   pattern.console: '%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n'
 
+---
+
+spring:
+  profiles: local
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flight-booking-db
+    username: postgres
+    password: password
+
+  # kafka properties
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+
+eureka:
+  client:
+    serviceUrl.defaultZone: http://localhost:8761/eureka

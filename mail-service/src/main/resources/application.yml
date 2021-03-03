@@ -3,11 +3,9 @@ server:
 
 eureka:
   client:
-    # Will get overridden in docker-compose (http://discovery-service:8761/eureka)
-    serviceUrl.defaultZone: http://localhost:8761/eureka
+    serviceUrl.defaultZone: http://discovery-service:8761/eureka
 
 spring:
-  profiles.active: @activatedProperties@
 
   application:
     name: mail-service
@@ -77,3 +75,16 @@ logging:
   file.name: app.log
   pattern.file: '%d %p %c{1.} [%t] %m%n'
   pattern.console: '%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n'
+
+---
+
+spring:
+  profiles: local
+
+  # kafka properties
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+
+eureka:
+  client:
+    serviceUrl.defaultZone: http://localhost:8761/eureka
