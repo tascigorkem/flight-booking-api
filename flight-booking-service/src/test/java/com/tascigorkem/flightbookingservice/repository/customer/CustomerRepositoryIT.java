@@ -1,8 +1,7 @@
 package com.tascigorkem.flightbookingservice.repository.customer;
 
-import com.tascigorkem.flightbookingservice.entity.booking.BookingEntity;
+import com.tascigorkem.flightbookingservice.entity.customer.CustomerEntity;
 import com.tascigorkem.flightbookingservice.faker.EntityModelFaker;
-import com.tascigorkem.flightbookingservice.repository.booking.BookingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,57 +25,60 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class CustomerRepositoryIT {
 
-    private final BookingRepository bookingRepository;
+    private final CustomerRepository customerRepository;
 
     @Autowired
-    CustomerRepositoryIT(BookingRepository bookingRepository) {
-        this.bookingRepository = bookingRepository;
+    CustomerRepositoryIT(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 
     @Test
     void testFindAllByDeletionTimeIsNull() {
         // arrange
-        UUID fakeBookingId1 = EntityModelFaker.fakeId();
-        UUID fakeBookingId2 = EntityModelFaker.fakeId();
+        UUID fakeCustomerId1 = EntityModelFaker.fakeId();
+        UUID fakeCustomerId2 = EntityModelFaker.fakeId();
 
-        BookingEntity fakeBookingEntity1 = EntityModelFaker.getFakeBookingEntity(fakeBookingId1, false);
-        BookingEntity fakeBookingEntity2 = EntityModelFaker.getFakeBookingEntity(fakeBookingId2, false);
+        CustomerEntity fakeCustomerEntity1 = EntityModelFaker.getFakeCustomerEntity(fakeCustomerId1, false);
+        CustomerEntity fakeCustomerEntity2 = EntityModelFaker.getFakeCustomerEntity(fakeCustomerId2, false);
 
-        fakeBookingEntity2.setDeletionTime(LocalDateTime.now());
+        fakeCustomerEntity2.setDeletionTime(LocalDateTime.now());
 
-        List<BookingEntity> bookingEntities = Arrays.asList(fakeBookingEntity1, fakeBookingEntity2);
+        List<CustomerEntity> customerEntities = Arrays.asList(fakeCustomerEntity1, fakeCustomerEntity2);
 
         // prepare db; delete all elements and insert entities
-        bookingRepository.deleteAll();
-        bookingRepository.saveAll(bookingEntities);
+        customerRepository.deleteAll();
+        customerRepository.saveAll(customerEntities);
 
         // act
         Pageable pageable = PageRequest.of(0,50);
-        Page<BookingEntity> resultBookingsEntitiesPage = bookingRepository.findAllByDeletionTimeIsNull(pageable);
+        Page<CustomerEntity> resultCustomersEntitiesPage = customerRepository.findAllByDeletionTimeIsNull(pageable);
 
         // assert
-        assertNotNull(resultBookingsEntitiesPage.getContent());
-        List<BookingEntity> resultBookingsEntities = resultBookingsEntitiesPage.getContent();
+        assertNotNull(resultCustomersEntitiesPage.getContent());
+        List<CustomerEntity> resultCustomersEntities = resultCustomersEntitiesPage.getContent();
 
-        Optional<BookingEntity> optBookingEntity1 = resultBookingsEntities.stream().filter(bookingEntity -> bookingEntity.getId().equals(fakeBookingId1)).findAny();
-        Optional<BookingEntity> optBookingEntity2 = resultBookingsEntities.stream().filter(bookingEntity -> bookingEntity.getId().equals(fakeBookingId2)).findAny();
+        Optional<CustomerEntity> optCustomerEntity1 = resultCustomersEntities.stream().filter(customerEntity -> customerEntity.getId().equals(fakeCustomerId1)).findAny();
+        Optional<CustomerEntity> optCustomerEntity2 = resultCustomersEntities.stream().filter(customerEntity -> customerEntity.getId().equals(fakeCustomerId2)).findAny();
 
-        assertTrue(optBookingEntity1.isPresent());
-        assertFalse(optBookingEntity2.isPresent());
+        assertTrue(optCustomerEntity1.isPresent());
+        assertFalse(optCustomerEntity2.isPresent());
 
-        BookingEntity resultBookingEntity1 = optBookingEntity1.get();
+        CustomerEntity resultCustomerEntity1 = optCustomerEntity1.get();
 
         assertAll(
-                () -> assertEquals(fakeBookingEntity1.getId(), resultBookingEntity1.getId()),
-                () -> assertEquals(fakeBookingEntity1.getState(), resultBookingEntity1.getState()),
-                () -> assertEquals(fakeBookingEntity1.getPaymentDate(), resultBookingEntity1.getPaymentDate()),
-                () -> assertEquals(fakeBookingEntity1.getPaymentAmount(), resultBookingEntity1.getPaymentAmount()),
-                () -> assertEquals(fakeBookingEntity1.isInsurance(), resultBookingEntity1.isInsurance()),
-                () -> assertEquals(fakeBookingEntity1.getLuggage(), resultBookingEntity1.getLuggage()),
+                () -> assertEquals(fakeCustomerEntity1.getId(), resultCustomerEntity1.getId()),
+                () -> assertEquals(fakeCustomerEntity1.getName(), resultCustomerEntity1.getName()),
+                () -> assertEquals(fakeCustomerEntity1.getSurname(), resultCustomerEntity1.getSurname()),
+                () -> assertEquals(fakeCustomerEntity1.getEmail(), resultCustomerEntity1.getEmail()),
+                () -> assertEquals(fakeCustomerEntity1.getPassword(), resultCustomerEntity1.getPassword()),
+                () -> assertEquals(fakeCustomerEntity1.getPhone(), resultCustomerEntity1.getPhone()),
+                () -> assertEquals(fakeCustomerEntity1.getAge(), resultCustomerEntity1.getAge()),
+                () -> assertEquals(fakeCustomerEntity1.getCity(), resultCustomerEntity1.getCity()),
+                () -> assertEquals(fakeCustomerEntity1.getCountry(), resultCustomerEntity1.getCountry()),
 
-                () -> assertNotNull(resultBookingEntity1.getCreationTime()),
-                () -> assertNotNull(resultBookingEntity1.getUpdateTime()),
-                () -> assertNull(resultBookingEntity1.getDeletionTime())
+                () -> assertNotNull(resultCustomerEntity1.getCreationTime()),
+                () -> assertNotNull(resultCustomerEntity1.getUpdateTime()),
+                () -> assertNull(resultCustomerEntity1.getDeletionTime())
         );
     }
 }

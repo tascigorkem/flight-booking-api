@@ -23,5 +23,5 @@ public enum AircraftModelNameFaker {
     BOEING_757,
     BOEING_767,
     BOEING_777,
-    BOEING_787;
+    BOEING_787
 }
