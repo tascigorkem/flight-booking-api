@@ -23,8 +23,8 @@ public class AirlineEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "county")
-    private String county;
+    @Column(name = "country")
+    private String country;
 
     @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FlightEntity> flights;
