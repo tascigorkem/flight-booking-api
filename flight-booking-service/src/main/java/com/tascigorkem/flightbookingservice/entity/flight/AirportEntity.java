@@ -28,9 +28,6 @@ public class AirportEntity extends BaseEntity {
     @Column(name = "city")
     private String city;
 
-    @Column(name = "county")
-    private String county;
-
     @OneToMany(mappedBy = "departureAirport", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FlightEntity> departureFlights;
 

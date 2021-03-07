@@ -83,21 +83,9 @@
 			</activation>
 		</profile>
 		<profile>
-			<id>dev</id>
+			<id>docker</id>
 			<properties>
-				<activatedProperties>dev</activatedProperties>
-			</properties>
-		</profile>
-		<profile>
-			<id>tst</id>
-			<properties>
-				<activatedProperties>tst</activatedProperties>
-			</properties>
-		</profile>
-		<profile>
-			<id>prod</id>
-			<properties>
-				<activatedProperties>prod</activatedProperties>
+				<activatedProperties>docker</activatedProperties>
 			</properties>
 		</profile>
 	</profiles>

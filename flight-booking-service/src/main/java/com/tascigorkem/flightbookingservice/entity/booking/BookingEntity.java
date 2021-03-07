@@ -1,7 +1,7 @@
 package com.tascigorkem.flightbookingservice.entity.booking;
 
 import com.tascigorkem.flightbookingservice.entity.base.BaseEntity;
-import com.tascigorkem.flightbookingservice.entity.candidate.CustomerEntity;
+import com.tascigorkem.flightbookingservice.entity.customer.CustomerEntity;
 import com.tascigorkem.flightbookingservice.entity.flight.FlightEntity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

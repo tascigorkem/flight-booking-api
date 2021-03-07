@@ -12,28 +12,28 @@ services:
     ports:
       - "5432:5432" #Forward the exposed port 5432 on the container to port 5432 on the host machine
     volumes:
-      - interview-data:/var/lib/postgresql/data
+      - flight-booking-data:/var/lib/postgresql/data
 
     #Environment variable for DB name, user and password
     environment:
-      - POSTGRES_DB: interview-db
-      - POSTGRES_USER: postgres
-      - POSTGRES_PASSWORD: password
+      POSTGRES_DB: flight-booking-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
 
-  #Eureka Discovery Servera
-  discovery-service:
+  #Eureka Discovery Server
+  discovery-server:
     build:
-      context: ./discovery-service
+      context: ./discovery-server
       dockerfile: Dockerfile
     restart: always
-    container_name: discovery-service
-    hostname: discovery-service
+    container_name: discovery-server
+    hostname: discovery-server
     ports:
       - "8761:8761"
     environment:
-      - SPRING_PROFILES_ACTIVE: docker
+      SPRING_PROFILES_ACTIVE: docker
 
-  #Interview Service: Spring Boot Application
+  #Flight Booking Service: Spring Boot Application
   flight-booking-service:
     #The docker file in flight-booking-service build the jar and provides the docker image with the following name.
     build:
@@ -46,17 +46,18 @@ services:
       - "8081:8081"
     depends_on:
       - flight-postgress
-      - discovery-service
+      - discovery-server
 
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:postgresql://flight-postgress:5432/interview-db
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flight-postgress:5432/flight-booking-db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password
+      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:9092
 
 #      - "JAVA_OPTS=
-#        -DEUREKA_SERVER=http://discovery-service:8761/eureka"
+#        -DEUREKA_SERVER=http://discovery-server:8761/eureka"
 
   #Mail Service: Spring Boot Application
   mail-service:
@@ -70,11 +71,12 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - discovery-service
+      - discovery-server
 
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
+      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:9092
 
   # Mailhog: mail catcher for local debugging
   mailhog:
@@ -86,4 +88,4 @@ services:
 
 #Volumes for DB data
 volumes:
-  interview-data:
+  flight-booking-data:

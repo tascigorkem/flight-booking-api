@@ -1,4 +1,4 @@
-package com.tascigorkem.flightbookingservice.entity.candidate;
+package com.tascigorkem.flightbookingservice.entity.customer;
 
 import com.tascigorkem.flightbookingservice.entity.base.BaseEntity;
 import com.tascigorkem.flightbookingservice.entity.booking.BookingEntity;
@@ -36,7 +36,7 @@ public class CustomerEntity extends BaseEntity {
     private String phone;
 
     @Column(name = "age")
-    private String age;
+    private short age;
 
     @Column(name = "city")
     private String city;

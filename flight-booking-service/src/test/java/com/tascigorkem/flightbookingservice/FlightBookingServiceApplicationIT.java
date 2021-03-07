@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class FlightBookingServiceApplicationTests {
+class FlightBookingServiceApplicationIT {
 
 	@Test
 	void main() {

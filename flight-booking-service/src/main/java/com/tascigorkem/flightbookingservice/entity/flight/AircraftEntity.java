@@ -1,7 +1,6 @@
 package com.tascigorkem.flightbookingservice.entity.flight;
 
 import com.tascigorkem.flightbookingservice.entity.base.BaseEntity;
-import com.tascigorkem.flightbookingservice.entity.booking.BookingEntity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +29,8 @@ public class AircraftEntity extends BaseEntity {
     @Column(name = "seat")
     private short seat;
 
-    @Column(name = "county")
-    private String county;
+    @Column(name = "country")
+    private String country;
 
     @Column(name = "manufacture_date")
     private LocalDateTime manufacturerDate;

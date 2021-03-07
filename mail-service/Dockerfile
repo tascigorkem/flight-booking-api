@@ -10,7 +10,7 @@ RUN mvn -B dependency:resolve dependency:resolve-plugins
 COPY src ./src
 # Package out application
 ARG MAVEN_OPTS
-RUN mvn package -DskipITs
+RUN mvn package -DskipITs -Pdocker
 
 # Just using the build artifact and then removing the build-container
 FROM adoptopenjdk/openjdk11:alpine-slim as runtime
