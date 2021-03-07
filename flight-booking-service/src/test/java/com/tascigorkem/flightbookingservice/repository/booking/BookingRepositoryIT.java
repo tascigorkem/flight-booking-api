@@ -25,8 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class BookingRepositoryIT {
 
+    private final BookingRepository bookingRepository;
+
     @Autowired
-    private BookingRepository bookingRepository;
+    BookingRepositoryIT(BookingRepository bookingRepository) {
+        this.bookingRepository = bookingRepository;
+    }
 
     @Test
     void testFindAllByDeletionTimeIsNull() {

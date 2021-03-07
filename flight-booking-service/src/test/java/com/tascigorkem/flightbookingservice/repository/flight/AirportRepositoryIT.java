@@ -25,8 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class AirportRepositoryIT {
 
+    private final AirportRepository airportRepository;
+
     @Autowired
-    private AirportRepository airportRepository;
+    AirportRepositoryIT(AirportRepository airportRepository) {
+        this.airportRepository = airportRepository;
+    }
 
     @Test
     void testFindAllByDeletionTimeIsNull() {
