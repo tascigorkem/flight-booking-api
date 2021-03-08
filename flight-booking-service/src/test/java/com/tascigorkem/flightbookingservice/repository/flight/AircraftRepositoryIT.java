@@ -1,6 +1,7 @@
 package com.tascigorkem.flightbookingservice.repository.flight;
 
 import com.tascigorkem.flightbookingservice.entity.flight.AircraftEntity;
+import com.tascigorkem.flightbookingservice.entity.flight.FlightEntity;
 import com.tascigorkem.flightbookingservice.faker.EntityModelFaker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,10 +24,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class AircraftRepositoryIT {
 
     private final AircraftRepository aircraftRepository;
+    private final FlightRepository flightRepository;
 
     @Autowired
-    AircraftRepositoryIT(AircraftRepository aircraftRepository) {
+    AircraftRepositoryIT(AircraftRepository aircraftRepository, FlightRepository flightRepository) {
         this.aircraftRepository = aircraftRepository;
+        this.flightRepository = flightRepository;
     }
 
     @Test
@@ -50,7 +50,7 @@ class AircraftRepositoryIT {
         aircraftRepository.saveAll(aircraftEntities);
 
         // act
-        Pageable pageable = PageRequest.of(0,50);
+        Pageable pageable = PageRequest.of(0, 50);
         Page<AircraftEntity> resultAircraftEntitiesPage = aircraftRepository.findAllByDeletionTimeIsNull(pageable);
 
         // assert
@@ -76,6 +76,38 @@ class AircraftRepositoryIT {
                 () -> assertNotNull(resultAircraftEntity1.getCreationTime()),
                 () -> assertNotNull(resultAircraftEntity1.getUpdateTime()),
                 () -> assertNull(resultAircraftEntity1.getDeletionTime())
+        );
+    }
+
+    @Test
+    void testAircraftRelations() {
+        // arrange
+        UUID fakeAircraftId = EntityModelFaker.fakeId();
+        UUID fakeFlightId = EntityModelFaker.fakeId();
+
+        AircraftEntity fakeAircraftEntity = EntityModelFaker.getFakeAircraftEntity(fakeAircraftId, false);
+        FlightEntity fakeFlightEntity = EntityModelFaker.getFakeFlightEntity(fakeFlightId, false);
+
+        // set entity relations
+        fakeAircraftEntity.setFlights(Collections.singletonList(fakeFlightEntity));
+        aircraftRepository.save(fakeAircraftEntity);
+
+        fakeFlightEntity.setAircraft(fakeAircraftEntity);
+        flightRepository.save(fakeFlightEntity);
+
+        // act
+        Optional<AircraftEntity> resultOptAircraftEntity = aircraftRepository.findById(fakeAircraftId);
+
+        // assert
+        assertTrue(resultOptAircraftEntity.isPresent());
+        AircraftEntity resultAircraftEntity = resultOptAircraftEntity.get();
+
+        assertAll(
+                () -> assertNotNull(resultAircraftEntity.getFlights()),
+
+                () -> assertEquals(1, resultAircraftEntity.getFlights().size()),
+
+                () -> assertEquals(fakeFlightEntity.getId(), resultAircraftEntity.getFlights().get(0).getId())
         );
     }
 }

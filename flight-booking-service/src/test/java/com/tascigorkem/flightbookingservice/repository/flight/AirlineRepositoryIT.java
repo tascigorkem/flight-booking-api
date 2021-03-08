@@ -1,6 +1,7 @@
 package com.tascigorkem.flightbookingservice.repository.flight;
 
 import com.tascigorkem.flightbookingservice.entity.flight.AirlineEntity;
+import com.tascigorkem.flightbookingservice.entity.flight.FlightEntity;
 import com.tascigorkem.flightbookingservice.faker.EntityModelFaker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,10 +24,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class AirlineRepositoryIT {
 
     private final AirlineRepository airlineRepository;
+    private final FlightRepository flightRepository;
 
     @Autowired
-    AirlineRepositoryIT(AirlineRepository airlineRepository) {
+    AirlineRepositoryIT(AirlineRepository airlineRepository, FlightRepository flightRepository) {
         this.airlineRepository = airlineRepository;
+        this.flightRepository = flightRepository;
     }
 
     @Test
@@ -73,6 +73,38 @@ class AirlineRepositoryIT {
                 () -> assertNotNull(resultAirlineEntity1.getCreationTime()),
                 () -> assertNotNull(resultAirlineEntity1.getUpdateTime()),
                 () -> assertNull(resultAirlineEntity1.getDeletionTime())
+        );
+    }
+
+
+    @Test
+    void testAirlineRelations() {
+        // arrange
+        UUID fakeAirlineId = EntityModelFaker.fakeId();
+        UUID fakeFlightId = EntityModelFaker.fakeId();
+
+        FlightEntity fakeFlightEntity = EntityModelFaker.getFakeFlightEntity(fakeFlightId, false);
+        AirlineEntity fakeAirlineEntity = EntityModelFaker.getFakeAirlineEntity(fakeAirlineId, false);
+
+        fakeAirlineEntity.setFlights(Collections.singletonList(fakeFlightEntity));
+        airlineRepository.save(fakeAirlineEntity);
+
+        fakeFlightEntity.setAirline(fakeAirlineEntity);
+        flightRepository.save(fakeFlightEntity);
+
+        // act
+        Optional<AirlineEntity> resultOptAirlineEntity = airlineRepository.findById(fakeAirlineId);
+
+        // assert
+        assertTrue(resultOptAirlineEntity.isPresent());
+        AirlineEntity resultAirlineEntity = resultOptAirlineEntity.get();
+
+        assertAll(
+                () -> assertNotNull(resultAirlineEntity.getFlights()),
+
+                () -> assertEquals(1, resultAirlineEntity.getFlights().size()),
+
+                () -> assertEquals(fakeFlightEntity.getId(), resultAirlineEntity.getFlights().get(0).getId())
         );
     }
 }

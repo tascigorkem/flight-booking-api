@@ -1,7 +1,9 @@
 package com.tascigorkem.flightbookingservice.repository.customer;
 
+import com.tascigorkem.flightbookingservice.entity.booking.BookingEntity;
 import com.tascigorkem.flightbookingservice.entity.customer.CustomerEntity;
 import com.tascigorkem.flightbookingservice.faker.EntityModelFaker;
+import com.tascigorkem.flightbookingservice.repository.booking.BookingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,10 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class CustomerRepositoryIT {
 
     private final CustomerRepository customerRepository;
+    private final BookingRepository bookingRepository;
 
     @Autowired
-    CustomerRepositoryIT(CustomerRepository customerRepository) {
+    CustomerRepositoryIT(CustomerRepository customerRepository, BookingRepository bookingRepository) {
         this.customerRepository = customerRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Test
@@ -79,6 +80,37 @@ class CustomerRepositoryIT {
                 () -> assertNotNull(resultCustomerEntity1.getCreationTime()),
                 () -> assertNotNull(resultCustomerEntity1.getUpdateTime()),
                 () -> assertNull(resultCustomerEntity1.getDeletionTime())
+        );
+    }
+
+    @Test
+    void testCustomerRelations() {
+        // arrange
+        UUID fakeCustomerId = EntityModelFaker.fakeId();
+        UUID fakeBookingId = EntityModelFaker.fakeId();
+
+        CustomerEntity fakeCustomerEntity = EntityModelFaker.getFakeCustomerEntity(fakeCustomerId, false);
+        BookingEntity fakeBookingEntity = EntityModelFaker.getFakeBookingEntity(fakeBookingId, false);
+
+        fakeCustomerEntity.setBookings(Collections.singletonList(fakeBookingEntity));
+        customerRepository.save(fakeCustomerEntity);
+
+        fakeBookingEntity.setCustomer(fakeCustomerEntity);
+        bookingRepository.save(fakeBookingEntity);
+
+        // act
+        Optional<CustomerEntity> resultOptCustomerEntity = customerRepository.findById(fakeCustomerId);
+
+        // assert
+        assertTrue(resultOptCustomerEntity.isPresent());
+        CustomerEntity resultCustomerEntity = resultOptCustomerEntity.get();
+
+        assertAll(
+                () -> assertNotNull(resultCustomerEntity.getBookings()),
+
+                () -> assertEquals(1, resultCustomerEntity.getBookings().size()),
+
+                () -> assertEquals(fakeBookingEntity.getId(), resultCustomerEntity.getBookings().get(0).getId())
         );
     }
 }

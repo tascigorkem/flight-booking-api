@@ -1,6 +1,7 @@
 package com.tascigorkem.flightbookingservice.repository.flight;
 
 import com.tascigorkem.flightbookingservice.entity.flight.AirportEntity;
+import com.tascigorkem.flightbookingservice.entity.flight.FlightEntity;
 import com.tascigorkem.flightbookingservice.faker.EntityModelFaker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,10 +24,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class AirportRepositoryIT {
 
     private final AirportRepository airportRepository;
+    private final FlightRepository flightRepository;
 
     @Autowired
-    AirportRepositoryIT(AirportRepository airportRepository) {
+    AirportRepositoryIT(AirportRepository airportRepository, FlightRepository flightRepository) {
         this.airportRepository = airportRepository;
+        this.flightRepository = flightRepository;
     }
 
     @Test
@@ -73,6 +73,46 @@ class AirportRepositoryIT {
                 () -> assertNotNull(resultAirportEntity1.getCreationTime()),
                 () -> assertNotNull(resultAirportEntity1.getUpdateTime()),
                 () -> assertNull(resultAirportEntity1.getDeletionTime())
+        );
+    }
+
+    @Test
+    void testAirportRelations() {
+        // arrange
+        UUID fakeAirportId = EntityModelFaker.fakeId();
+        UUID fakeDeptFlightId = EntityModelFaker.fakeId();
+        UUID fakeDestFlightId = EntityModelFaker.fakeId();
+
+        AirportEntity fakeAirportEntity = EntityModelFaker.getFakeAirportEntity(fakeAirportId, false);
+        FlightEntity fakeDeptFlightEntity = EntityModelFaker.getFakeFlightEntity(fakeDeptFlightId, false);
+        FlightEntity fakeDestFlightEntity = EntityModelFaker.getFakeFlightEntity(fakeDestFlightId, false);
+
+        fakeAirportEntity.setDepartureFlights(Collections.singletonList(fakeDeptFlightEntity));
+        fakeAirportEntity.setDestinationFlights(Collections.singletonList(fakeDestFlightEntity));
+        airportRepository.save(fakeAirportEntity);
+
+        fakeDeptFlightEntity.setDepartureAirport(fakeAirportEntity);
+        flightRepository.save(fakeDeptFlightEntity);
+
+        fakeDestFlightEntity.setDestinationAirport(fakeAirportEntity);
+        flightRepository.save(fakeDestFlightEntity);
+
+        // act
+        Optional<AirportEntity> resultOptAirportEntity = airportRepository.findById(fakeAirportId);
+
+        // assert
+        assertTrue(resultOptAirportEntity.isPresent());
+        AirportEntity resultAirportEntity = resultOptAirportEntity.get();
+
+        assertAll(
+                () -> assertNotNull(resultAirportEntity.getDestinationFlights()),
+                () -> assertNotNull(resultAirportEntity.getDepartureFlights()),
+
+                () -> assertEquals(1, resultAirportEntity.getDestinationFlights().size()),
+                () -> assertEquals(1, resultAirportEntity.getDepartureFlights().size()),
+
+                () -> assertEquals(fakeDestFlightEntity.getId(), resultAirportEntity.getDestinationFlights().get(0).getId()),
+                () -> assertEquals(fakeDeptFlightEntity.getId(), resultAirportEntity.getDepartureFlights().get(0).getId())
         );
     }
 }
