@@ -28,6 +28,9 @@ public class FlightEntity extends BaseEntity {
     @Column(name = "arrival_date")
     private LocalDateTime arrivalDate;
 
+    @Column(name = "price")
+    private BigDecimal price;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_airport_id")
     private AirportEntity departureAirport;
@@ -43,9 +46,6 @@ public class FlightEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "airline_id")
     private AirlineEntity airline;
-
-    @Column(name = "price")
-    private BigDecimal price;
 
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingEntity> bookings;

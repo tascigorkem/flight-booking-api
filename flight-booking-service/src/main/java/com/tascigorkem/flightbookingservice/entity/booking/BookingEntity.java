@@ -22,13 +22,6 @@ import java.time.LocalDateTime;
 @Table(name = "booking")
 public class BookingEntity extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "flight_id")
-    private FlightEntity flight;
 
     @Column(name = "state")
     private String state;
@@ -44,5 +37,13 @@ public class BookingEntity extends BaseEntity {
 
     @Column(name = "luggage")
     private short luggage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private CustomerEntity customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "flight_id")
+    private FlightEntity flight;
 
 }
