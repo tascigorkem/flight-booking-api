@@ -11,13 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-//@EnableSwagger2
 public class SwaggerConfiguration {
     @Bean
     public LinkDiscoverers discoverers() {
         List<LinkDiscoverer> plugins = new ArrayList<>();
         plugins.add(new CollectionJsonLinkDiscoverer());
-        return new LinkDiscoverers(SimplePluginRegistry.create(plugins));
+        return new LinkDiscoverers(SimplePluginRegistry.of(plugins));
 
     }
 }

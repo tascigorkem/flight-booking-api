@@ -1,5 +1,8 @@
 package com.tascigorkem.flightbookingservice.repository.flight;
 
+import com.tascigorkem.flightbookingservice.entity.flight.AircraftEntity;
+import com.tascigorkem.flightbookingservice.entity.flight.AirlineEntity;
+import com.tascigorkem.flightbookingservice.entity.flight.AirportEntity;
 import com.tascigorkem.flightbookingservice.entity.flight.FlightEntity;
 import com.tascigorkem.flightbookingservice.faker.EntityModelFaker;
 import org.junit.jupiter.api.Test;
@@ -13,10 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,8 +25,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class FlightRepositoryIT {
 
+    private final FlightRepository flightRepository;
+    private final AirportRepository airportRepository;
+    private final AircraftRepository aircraftRepository;
+    private final AirlineRepository airlineRepository;
+
     @Autowired
-    private FlightRepository flightRepository;
+    FlightRepositoryIT(FlightRepository flightRepository, AirportRepository airportRepository, AircraftRepository aircraftRepository, AirlineRepository airlineRepository) {
+        this.flightRepository = flightRepository;
+        this.airportRepository = airportRepository;
+        this.aircraftRepository = aircraftRepository;
+        this.airlineRepository = airlineRepository;
+    }
 
     @Test
     void testFindAllByDeletionTimeIsNull() {
@@ -70,6 +80,62 @@ class FlightRepositoryIT {
                 () -> assertNotNull(resultFlightEntity1.getCreationTime()),
                 () -> assertNotNull(resultFlightEntity1.getUpdateTime()),
                 () -> assertNull(resultFlightEntity1.getDeletionTime())
+        );
+    }
+
+    @Test
+    void testFlightRelations() {
+        // arrange
+        UUID fakeFlightId = EntityModelFaker.fakeId();
+        UUID fakeDeptAirportId = EntityModelFaker.fakeId();
+        UUID fakeDestAirportId = EntityModelFaker.fakeId();
+        UUID fakeAircraftId = EntityModelFaker.fakeId();
+        UUID fakeAirlineId = EntityModelFaker.fakeId();
+
+        FlightEntity fakeFlightEntity = EntityModelFaker.getFakeFlightEntity(fakeFlightId, false);
+        AirportEntity fakeDeptAirportEntity = EntityModelFaker.getFakeAirportEntity(fakeDeptAirportId, false);
+        AirportEntity fakeDestAirportEntity = EntityModelFaker.getFakeAirportEntity(fakeDestAirportId, false);
+        AircraftEntity fakeAircraftEntity = EntityModelFaker.getFakeAircraftEntity(fakeAircraftId, false);
+        AirlineEntity fakeAirlineEntity = EntityModelFaker.getFakeAirlineEntity(fakeAirlineId, false);
+
+        // set entity relations
+        fakeDeptAirportEntity.setDepartureFlights(Collections.singletonList(fakeFlightEntity));
+        fakeDeptAirportEntity.setDestinationFlights(Collections.emptyList());
+        airportRepository.save(fakeDeptAirportEntity);
+
+        fakeDestAirportEntity.setDepartureFlights(Collections.emptyList());
+        fakeDestAirportEntity.setDestinationFlights(Collections.singletonList(fakeFlightEntity));
+        airportRepository.save(fakeDestAirportEntity);
+
+        fakeAircraftEntity.setFlights(Collections.singletonList(fakeFlightEntity));
+        aircraftRepository.save(fakeAircraftEntity);
+
+        fakeAirlineEntity.setFlights(Collections.singletonList(fakeFlightEntity));
+        airlineRepository.save(fakeAirlineEntity);
+
+        fakeFlightEntity.setDepartureAirport(fakeDeptAirportEntity);
+        fakeFlightEntity.setDestinationAirport(fakeDestAirportEntity);
+        fakeFlightEntity.setAircraft(fakeAircraftEntity);
+        fakeFlightEntity.setAirline(fakeAirlineEntity);
+        flightRepository.save(fakeFlightEntity);
+
+        // act
+        Optional<FlightEntity> resultOptFlightEntity = flightRepository.findById(fakeFlightId);
+
+        // assert
+        assertTrue(resultOptFlightEntity.isPresent());
+        FlightEntity resultFlightEntity = resultOptFlightEntity.get();
+
+        assertAll(
+                () -> assertNotNull(resultFlightEntity.getDepartureAirport()),
+                () -> assertNotNull(resultFlightEntity.getDestinationAirport()),
+                () -> assertNotNull(resultFlightEntity.getAircraft()),
+                () -> assertNotNull(resultFlightEntity.getAirline()),
+
+                () -> assertEquals(fakeDeptAirportEntity.getId(), resultFlightEntity.getDepartureAirport().getId()),
+                () -> assertEquals(fakeDestAirportEntity.getId(), resultFlightEntity.getDestinationAirport().getId()),
+                () -> assertEquals(fakeAircraftEntity.getId(), resultFlightEntity.getAircraft().getId()),
+                () -> assertEquals(fakeAirlineEntity.getId(), resultFlightEntity.getAirline().getId())
         );
     }
 }

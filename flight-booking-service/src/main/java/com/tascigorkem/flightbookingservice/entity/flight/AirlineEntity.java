@@ -1,7 +1,6 @@
 package com.tascigorkem.flightbookingservice.entity.flight;
 
 import com.tascigorkem.flightbookingservice.entity.base.BaseEntity;
-import com.tascigorkem.flightbookingservice.entity.booking.BookingEntity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
