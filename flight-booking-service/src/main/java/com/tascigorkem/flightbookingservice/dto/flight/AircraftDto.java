@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
@@ -23,12 +24,12 @@ public class AircraftDto extends BaseDto {
     @NotBlank(message = "code cannot be blank")
     private String code;
 
-    @NotBlank(message = "seat cannot be blank")
+    @NotNull(message = "seat cannot be blank")
     private short seat;
 
     @NotBlank(message = "country cannot be blank")
     private String country;
 
-    @NotBlank(message = "manufacturerDate cannot be blank")
+    @NotNull(message = "manufacturerDate cannot be null")
     private LocalDateTime manufacturerDate;
 }

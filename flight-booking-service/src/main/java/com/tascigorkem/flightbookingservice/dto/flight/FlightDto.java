@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -18,25 +18,18 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class FlightDto extends BaseDto {
 
-    @NotBlank(message = "departureDate cannot be blank")
+    @NotNull(message = "departureDate cannot be null")
     private LocalDateTime departureDate;
 
-    @NotBlank(message = "arrivalDate cannot be blank")
+    @NotNull(message = "arrivalDate cannot be null")
     private LocalDateTime arrivalDate;
 
-    @NotBlank(message = "price cannot be blank")
+    @NotNull(message = "price cannot be null")
     private BigDecimal price;
 
-    @NotBlank(message = "departureAirport cannot be blank")
     private AirportDto departureAirport;
-
-    @NotBlank(message = "destinationAirport cannot be blank")
     private AirportDto destinationAirport;
-
-    @NotBlank(message = "aircraft cannot be blank")
     private AircraftDto aircraft;
-
-    @NotBlank(message = "airline cannot be blank")
     private AirlineDto airline;
 
 }

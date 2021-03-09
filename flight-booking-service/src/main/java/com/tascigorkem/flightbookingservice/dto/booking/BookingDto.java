@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -23,16 +24,16 @@ public class BookingDto extends BaseDto {
     @NotBlank(message = "state cannot be blank")
     private String state;
 
-    @NotBlank(message = "paymentDate cannot be blank")
+    @NotNull(message = "paymentDate cannot be null")
     private LocalDateTime paymentDate;
 
-    @NotBlank(message = "paymentAmount cannot be blank")
+    @NotNull(message = "paymentAmount cannot be null")
     private BigDecimal paymentAmount;
 
-    @NotBlank(message = "insurance cannot be blank")
+    @NotNull(message = "insurance cannot be null")
     private boolean insurance;
 
-    @NotBlank(message = "luggage cannot be blank")
+    @NotNull(message = "luggage cannot be null")
     private short luggage;
 
     private CustomerDto customer;
