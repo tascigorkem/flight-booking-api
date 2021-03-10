@@ -1,5 +1,5 @@
 Hello [(${fullName})],
 
-Your recieved message from kafka: [(${productName})]
+Your booking ID: [(${bookingId})]
 
 

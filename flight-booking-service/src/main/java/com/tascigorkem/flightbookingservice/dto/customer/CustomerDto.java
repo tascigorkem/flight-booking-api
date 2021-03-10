@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -31,7 +32,7 @@ public class CustomerDto extends BaseDto {
     @NotBlank(message = "phone cannot be blank")
     private String phone;
 
-    @NotBlank(message = "age cannot be blank")
+    @NotNull(message = "age cannot be null")
     private short age;
 
     @NotBlank(message = "city cannot be blank")

@@ -51,8 +51,8 @@ public class EntityModelFaker {
                 .password(faker.internet().password())
                 .phone(faker.phoneNumber().cellPhone())
                 .age((short) faker.number().numberBetween(0, 100))
-                .city(country.capital())
-                .country(country.name())
+                .city(country.capital().replaceAll("[^A-Za-z\\s]", ""))
+                .country(country.name().replaceAll("[^A-Za-z\\s]", ""))
                 .creationTime(dateTime)
                 .updateTime(dateTime)
                 .build();
@@ -66,7 +66,7 @@ public class EntityModelFaker {
                 .modelName(EnumRandomizeUtil.randomEnum(AircraftModelNameFaker.class).name())
                 .code(faker.company().suffix())
                 .seat((short) faker.number().numberBetween(0, 700))
-                .country(faker.country().name())
+                .country(faker.country().name().replaceAll("[^A-Za-z\\s]", ""))
                 .manufacturerDate(LocalDateTime.now())
                 .creationTime(dateTime)
                 .updateTime(dateTime)
@@ -79,7 +79,7 @@ public class EntityModelFaker {
         return AirlineEntity.builder()
                 .id(id)
                 .name(faker.company().name())
-                .country(faker.country().name())
+                .country(faker.country().name().replaceAll("[^A-Za-z\\s]", ""))
                 .creationTime(dateTime)
                 .updateTime(dateTime)
                 .build();

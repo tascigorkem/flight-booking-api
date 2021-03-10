@@ -1,6 +1,7 @@
 package com.tascigorkem.mailservice.service;
 
 import com.tascigorkem.mailservice.dto.EmailContentDto;
+import com.tascigorkem.mailservice.dto.kafka.KafkaEmailMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -11,10 +12,10 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 public class TemplateService {
     private final SpringTemplateEngine templateEngine;
 
-    public EmailContentDto generateProjectStatusChangeEmail(String message) {
+    public EmailContentDto generateProjectStatusChangeEmail(KafkaEmailMessageDto kafkaEmailMessageDto) {
         Context context = new Context();
-        context.setVariable("fullName", "Görkem Taşçı");
-        context.setVariable("productName", message);
+        context.setVariable("fullName", kafkaEmailMessageDto.getFullName());
+        context.setVariable("bookingId", kafkaEmailMessageDto.getBookingId());
 
         return EmailContentDto
                 .builder()

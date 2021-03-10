@@ -47,18 +47,17 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.add.type.headers: false
 
-# kafka topics
-my-message-topic:
-  name: my-topic
-  num-partitions: 1
-  replication-factor: 1
-  messages-per-request: 10
-
-my-object-topic:
-  name: my-object-topic
-  num-partitions: 1
-  replication-factor: 1
-  messages-per-request: 10
+kafka-topics:
+  kafka-message-topic:
+    name: my-message-topic
+    num-partitions: 1
+    replication-factor: 1
+    messages-per-request: 10
+  kafka-object-topic:
+    name: my-object-topic
+    num-partitions: 1
+    replication-factor: 1
+    messages-per-request: 10
 
 # logging
 logging:
@@ -90,7 +89,6 @@ spring:
 #  client:
 #    serviceUrl.defaultZone: http://localhost:8761/eureka
 
-
 ---
 
 spring:
@@ -98,3 +96,16 @@ spring:
 
 #  kafka:
 #    bootstrap-servers: kafka:9092
+
+#  datasource:
+#    url: jdbc:postgresql://flight-postgress:5432/flight-booking-db
+#    username: postgres
+#    password: password
+#
+#  kafka:
+#    bootstrap-servers: kafka:9092
+#
+#eureka:
+#  client:
+#    serviceUrl.defaultZone: http://discovery-server:8761/eureka
+
