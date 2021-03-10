@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaTopicConfiguration {
 
-    @Value("${my-message-topic.name}")
+    @Value("${kafka-topics.kafka-message-topic.name}")
     private String myMessageTopicName;
-    @Value("${my-message-topic.num-partitions}")
+    @Value("${kafka-topics.kafka-message-topic.num-partitions}")
     private int myMessageTopicNumPartitions;
-    @Value("${my-message-topic.replication-factor}")
+    @Value("${kafka-topics.kafka-message-topic.replication-factor}")
     private short myMessageTopicReplicationFactor;
 
     @Bean
@@ -20,11 +20,11 @@ public class KafkaTopicConfiguration {
         return new NewTopic(myMessageTopicName, myMessageTopicNumPartitions, myMessageTopicReplicationFactor);
     }
 
-    @Value("${my-object-topic.name}")
+    @Value("${kafka-topics.kafka-object-topic.name}")
     private String myObjectTopicName;
-    @Value("${my-object-topic.num-partitions}")
+    @Value("${kafka-topics.kafka-object-topic.num-partitions}")
     private int myObjectTopicNumPartitions;
-    @Value("${my-object-topic.replication-factor}")
+    @Value("${kafka-topics.kafka-object-topic.replication-factor}")
     private short myObjectTopicReplicationFactor;
 
     @Bean
