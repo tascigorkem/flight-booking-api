@@ -61,14 +61,10 @@ kafka-topics:
     replication-factor: 1
     messages-per-request: 10
 
-# logging
 logging:
-
-  # level
   level:
-    org.springframework: ERROR
+    org.springframework: INFO
     com.tascigorkem.mailservice: DEBUG
-
   # output to a file
   file.name: app.log
   pattern.file: '%d %p %c{1.} [%t] %m%n'
