@@ -28,11 +28,11 @@ This is a project structure.
 
 All applications in the project are dockerized.
 
-In the center of this schema, you can see Eureka Discovery Server from Spring Cloud Netflix and 2 Spring Boot microservices registered to this server. The first microservice is Restful CRUD API I showed in the previous slides, and it is uses PostgreSql as a database. The second microservice is a mail sending service, and it is uses MailHog for SMTP testing.
+In the center of this schema, you can see Eureka Discovery Server from Spring Cloud Netflix and 2 Spring Boot microservices registered to this server. The first microservice is Restful CRUD API, and it is uses PostgreSQL as a database. The second microservice is a mail sending service, and it is uses MailHog for SMTP testing.
 
 <img src="./docs/eureka.jpg" alt="" width="600">
 
-In addition to these, 2 microservices communicate with each other with Kafka and Zookeeper. API service sends message to Kafka and mail sending service receives this message and sends it by e-mail.
+In addition to these, 2 microservices communicate with each other with Apache Kafka and Zookeeper. API service sends message to Kafka and mail sending service receives this message and sends it by e-mail.
 
 Also, elastic stack used for log-analysis solution. Filebeats binds the dockerized container logs and ships these to ElasticSearch. Then, Kibana visualize these logs.
 
