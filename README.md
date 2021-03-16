@@ -90,6 +90,11 @@ This snippet checks whether invalid request returns the HTTP status 400 Bad Requ
 
 Used PostgreSQL as database.
 
+DB Diagram:
+
+<img src="./docs/db-diagram.jpg" alt="" width="800">
+
+
 `spring.datasource.initialization-mode:always` for database initialization from schema.sql
 
 Database Schema Generation - Sql: `./flight-booking-service/src/main/resources/schema.sql`
@@ -122,7 +127,7 @@ MailHog, that catches e-mail was sent by microservice 2(mail-service).
 
 Additionally, this whole process can be monitored and analyzed through Kibana with Elasticsearch.
 
-<img src="./docs/kibana.jpg" alt="" width="600">
+<img src="./docs/kibana.jpg" alt="" width="800">
 
 
 ### Docs
