@@ -108,8 +108,6 @@ Additionally, there are ManyToOne and OneToMany relations between entities.
 <img src="./docs/flight-entity-1.jpg" alt="" width="600">
 <img src="./docs/flight-entity-2.jpg" alt="" width="600">
 
-...
-
 
 ### Kafka & ElasticSearch
 
