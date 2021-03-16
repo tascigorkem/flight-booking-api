@@ -47,7 +47,12 @@ JSON Hypermedia API Language (HAL) is a response's content-type: application/hal
 
 <img src="./docs/hateoas-2.jpg" alt="" width="600">
 
+
 ### Docker
+
+All applications in this project are dockerized. To achieve this, 3 docker-compose files are created.
+
+Then, all applications can be started with a single docker-compose command:
 
 `
 docker-compose -f docker-compose-app.yml -f docker-compose-elk.yml -f docker-compose-kafka.yml up --build -d
@@ -55,10 +60,16 @@ docker-compose -f docker-compose-app.yml -f docker-compose-elk.yml -f docker-com
 
 <img src="./docs/docker-compose.jpg" alt="" width="600">
 
+PS: For local development, up docker-compose-kafka-local.yml, then start microservices.
+
+`
+docker-compose -f docker-compose-kafka-local.yml up -d
+`
+
 
 ### Test & Validation
 
-JUnit5 and Mockito are used in this project.
+JUnit5, Mockito and Github-Faker are used in this project.
 
 This snippet shows that unit test for Get by id request and usage of Arrange-Act-Assert (3A) pattern. Additionally, checks status of response.
 
@@ -79,6 +90,11 @@ This snippet checks whether invalid request returns the HTTP status 400 Bad Requ
 
 Used PostgreSQL as database.
 
+DB Diagram:
+
+<img src="./docs/db-diagram.jpg" alt="" width="800">
+
+
 `spring.datasource.initialization-mode:always` for database initialization from schema.sql
 
 Database Schema Generation - Sql: `./flight-booking-service/src/main/resources/schema.sql`
@@ -93,6 +109,7 @@ Additionally, there are ManyToOne and OneToMany relations between entities.
 <img src="./docs/flight-entity-2.jpg" alt="" width="600">
 
 ...
+
 
 ### Kafka & ElasticSearch
 
@@ -110,13 +127,13 @@ MailHog, that catches e-mail was sent by microservice 2(mail-service).
 
 Additionally, this whole process can be monitored and analyzed through Kibana with Elasticsearch.
 
-<img src="./docs/kibana.jpg" alt="" width="600">
+<img src="./docs/kibana.jpg" alt="" width="800">
 
-...
 
 ### Docs
 
 Docs located `./docs` folder in the main project folder.
+
 
 #### Javadoc
 
@@ -126,6 +143,7 @@ Run `mvn javadoc:javadoc` for create javadocs.
 
 <img src="./docs/javadoc-code-snippet.jpg" alt="" width="600">
 
+
 #### Swagger & Api-Docs
 
 Used Swagger and Api-Docs for RestAPI endpoints.
@@ -134,8 +152,18 @@ Used Swagger and Api-Docs for RestAPI endpoints.
 
 <img src="./docs/swagger-ui.jpg" alt="" width="600">
 
-## Notes
+
+## Notes & Scenario
 
 **Scenario:** Create a new customer, create a new flight and customer books this flight
 
 ...
+
+
+## References
+
+...
+
+
+## License
+Restaurant Service is developed under the [MIT License](LICENSE).
