@@ -164,4 +164,4 @@ Used Swagger and Api-Docs for RestAPI endpoints.
 
 
 ## License
-Restaurant Service is developed under the [MIT License](LICENSE).
+Flight Booking API is developed under the [MIT License](LICENSE).
