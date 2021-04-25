@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS flight
     dest_airport_id uuid,
     CONSTRAINT flight_pkey PRIMARY KEY (id),
     CONSTRAINT fk_airline_id FOREIGN KEY (airline_id)
-        REFERENCES public.airplane (id) MATCH SIMPLE
+        REFERENCES public.airline (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT fk_dept_airport_id FOREIGN KEY (dept_airport_id)
