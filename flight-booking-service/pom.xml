@@ -188,7 +188,7 @@
 				<version>2.22.2</version>
 				<configuration>
 					<includes>
-						<include>**/*Test.class</include>
+						<include>**/*Test.java</include>
 					</includes>
 					<excludes>
 						<exclude>**/*IT.java</exclude>
@@ -201,7 +201,7 @@
 				<version>2.22.2</version>
 				<configuration>
 					<includes>
-						<include>**/*IT.class</include>
+						<include>**/*IT.java</include>
 					</includes>
 					<excludes>
 						<exclude>**/*Test.java</exclude>
