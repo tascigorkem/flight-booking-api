@@ -41,8 +41,8 @@ class CustomerServiceIT {
      * Checking whether connection with CustomerRepository is successful
      */
     @Test
-    void testGetAllCustomers() {
-        // arrange
+    void getAllCustomers_RetrieveCustomers_ShouldReturnNotDeletedCustomers() {
+        // GIVEN
         UUID fakeCustomerId1 = EntityModelFaker.fakeId();
         UUID fakeCustomerId2 = EntityModelFaker.fakeId();
 
@@ -59,11 +59,11 @@ class CustomerServiceIT {
         customerRepository.saveAll(fakeCustomerEntities);
 
         Pageable pageable = PageRequest.of(0, 5);
-        // act
+        // WHEN
 
         Page<CustomerDto> resultCustomerDtoPage = customerService.getAllCustomers(pageable);
 
-        // assert
+        // THEN
         assertNotNull(resultCustomerDtoPage.getContent());
         List<CustomerDto> resultCustomerDtoList = resultCustomerDtoPage.getContent();
 

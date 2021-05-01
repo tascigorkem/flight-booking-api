@@ -41,8 +41,8 @@ class BookingServiceIT {
      * Checking whether connection with BookingRepository is successful
      */
     @Test
-    void testGetAllBookings() {
-        // arrange
+    void getAllBookings_RetrieveBookings_ShouldReturnNotDeletedBookings() {
+        // GIVEN
         UUID fakeBookingId1 = EntityModelFaker.fakeId();
         UUID fakeBookingId2 = EntityModelFaker.fakeId();
 
@@ -59,11 +59,11 @@ class BookingServiceIT {
         bookingRepository.saveAll(fakeBookingEntities);
 
         Pageable pageable = PageRequest.of(0, 5);
-        // act
+        // WHEN
 
         Page<BookingDto> resultBookingDtoPage = bookingService.getAllBookings(pageable);
 
-        // assert
+        // THEN
         assertNotNull(resultBookingDtoPage.getContent());
         List<BookingDto> resultBookingDtoList = resultBookingDtoPage.getContent();
 

@@ -39,17 +39,17 @@ class BookingControllerEnd2EndIT {
      * E2E test for BookingController:getAllBookings
      */
     @Test
-    void testGetBookingById() throws JsonProcessingException {
-        // arrange
+    void getBookingById_WithBookingId_ShouldReturnBooking() throws JsonProcessingException {
+        // GIVEN
         UUID fakeBookingEntityId = EntityModelFaker.fakeId();
         BookingEntity fakeBookingEntity = EntityModelFaker.getFakeBookingEntity(fakeBookingEntityId, false);
         bookingRepository.save(fakeBookingEntity);
 
-        // act
+        // WHEN
         ResponseEntity<String> response = this.restTemplate.getForEntity(
                 "/bookings/" + fakeBookingEntityId, String.class);
 
-        // assert
+        // THEN
         assertEquals(HttpStatus.OK, response.getStatusCode());
         JsonNode bookingDtoJsonNode = objectMapper.readTree(response.getBody());
 

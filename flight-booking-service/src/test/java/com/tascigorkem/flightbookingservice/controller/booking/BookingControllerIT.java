@@ -51,8 +51,8 @@ class BookingControllerIT {
      * Checking whether connection with BookingService is successful
      */
     @Test
-    void testGetAllBookings() throws Exception {
-        // arrange
+    void getAllBookings_RetrieveBookings_ShouldReturnNotDeletedBookings() throws Exception {
+        // GIVEN
         List<BookingEntity> fakeBookingEntityList = Arrays.asList(
                 EntityModelFaker.getFakeBookingEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeBookingEntity(EntityModelFaker.fakeId(), true),
@@ -68,11 +68,11 @@ class BookingControllerIT {
         List<BookingDto> fakeBookingDtoList = BOOKING_MAPPER.toBookingDtoList(fakeBookingEntityList);
         PageImpl<BookingDto> fakeBookingDtoPage = new PageImpl<>(fakeBookingDtoList, pageable, fakeBookingDtoList.size());
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/bookings"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

@@ -51,8 +51,8 @@ class FlightControllerIT {
      * Checking whether connection with FlightService is successful
      */
     @Test
-    void testGetAllFlights() throws Exception {
-        // arrange
+    void getAllFlights_RetrieveFlights_ShouldReturnNotDeletedFlights() throws Exception {
+        // GIVEN
         List<FlightEntity> fakeFlightEntityList = Arrays.asList(
                 EntityModelFaker.getFakeFlightEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeFlightEntity(EntityModelFaker.fakeId(), true),
@@ -68,11 +68,11 @@ class FlightControllerIT {
         List<FlightDto> fakeFlightDtoList = FLIGHT_MAPPER.toFlightDtoList(fakeFlightEntityList);
         PageImpl<FlightDto> fakeFlightDtoPage = new PageImpl<>(fakeFlightDtoList, pageable, fakeFlightDtoList.size());
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/flights"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

@@ -50,8 +50,8 @@ class CustomerControllerIT {
      * Checking whether connection with CustomerService is successful
      */
     @Test
-    void testGetAllCustomers() throws Exception {
-        // arrange
+    void getAllCustomers_RetrieveCustomers_ShouldReturnNotDeletedCustomers() throws Exception {
+        // GIVEN
         List<CustomerEntity> fakeCustomerEntityList = Arrays.asList(
                 EntityModelFaker.getFakeCustomerEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeCustomerEntity(EntityModelFaker.fakeId(), true),
@@ -67,11 +67,11 @@ class CustomerControllerIT {
         List<CustomerDto> fakeCustomerDtoList = CUSTOMER_MAPPER.toCustomerDtoList(fakeCustomerEntityList);
         PageImpl<CustomerDto> fakeCustomerDtoPage = new PageImpl<>(fakeCustomerDtoList, pageable, fakeCustomerDtoList.size());
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/customers"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

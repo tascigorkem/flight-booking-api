@@ -41,8 +41,8 @@ class BookingRepositoryIT {
     }
 
     @Test
-    void testFindAllByDeletionTimeIsNull() {
-        // arrange
+    void findAllByDeletionTimeIsNull_RetrieveNotDeletedEntites_ShouldReturnNotDeletedEntites() {
+        // GIVEN
         UUID fakeBookingId1 = EntityModelFaker.fakeId();
         UUID fakeBookingId2 = EntityModelFaker.fakeId();
 
@@ -57,11 +57,11 @@ class BookingRepositoryIT {
         bookingRepository.deleteAll();
         bookingRepository.saveAll(bookingEntities);
 
-        // act
+        // WHEN
         Pageable pageable = PageRequest.of(0,50);
         Page<BookingEntity> resultBookingsEntitiesPage = bookingRepository.findAllByDeletionTimeIsNull(pageable);
 
-        // assert
+        // THEN
         assertNotNull(resultBookingsEntitiesPage.getContent());
         List<BookingEntity> resultBookingsEntities = resultBookingsEntitiesPage.getContent();
 
@@ -89,7 +89,7 @@ class BookingRepositoryIT {
 
     @Test
     void testBookingRelations() {
-        // arrange
+        // GIVEN
         UUID fakeBookingId = EntityModelFaker.fakeId();
         UUID fakeCustomerId = EntityModelFaker.fakeId();
         UUID fakeFlightId = EntityModelFaker.fakeId();
@@ -105,7 +105,7 @@ class BookingRepositoryIT {
         fakeBookingEntity.setFlight(fakeFlightEntity);
         bookingRepository.save(fakeBookingEntity);
 
-        // act
+        // WHEN
         Optional<BookingEntity> resultOptBookingEntity = bookingRepository.findById(fakeBookingId);
 
         //assert

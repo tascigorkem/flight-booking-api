@@ -3,9 +3,9 @@ package com.tascigorkem.flightbookingservice.controller.flight;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tascigorkem.flightbookingservice.dto.flight.FlightDto;
+import com.tascigorkem.flightbookingservice.exception.notfound.FlightNotFoundException;
 import com.tascigorkem.flightbookingservice.faker.DtoModelFaker;
 import com.tascigorkem.flightbookingservice.service.flight.FlightService;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -46,8 +46,8 @@ class FlightControllerTest {
      * Unit test for FlightController:getAllFlights
      */
     @Test
-    void testGetAllFlights() throws Exception {
-        // arrange
+    void getAllFlights_RetrieveFlights_ShouldReturnNotDeletedFlights() throws Exception {
+        // GIVEN
         List<FlightDto> fakeFlightDtoList = Arrays.asList(
                 DtoModelFaker.getFakeFlightDto(DtoModelFaker.fakeId(), true),
                 DtoModelFaker.getFakeFlightDto(DtoModelFaker.fakeId(), true),
@@ -60,11 +60,11 @@ class FlightControllerTest {
         when(this.flightService.getAllFlights(any(Pageable.class)))
                 .thenReturn(fakeFlightDtoPage);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/flights"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -98,19 +98,19 @@ class FlightControllerTest {
      * Unit test for FlightController:getFlightById
      */
     @Test
-    void testGetFlightById() throws Exception {
-        // arrange
+    void getFlightById_WithFlightId_ShouldReturnFlight() throws Exception {
+        // GIVEN
         UUID fakeFlightDtoId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightDtoId, true);
 
         when(this.flightService.getFlightById(fakeFlightDtoId))
                 .thenReturn(fakeFlightDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/flights/{id}", fakeFlightDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -125,24 +125,48 @@ class FlightControllerTest {
     }
 
     /**
+     * Unit test for FlightController:getFlightById
+     * Given wrong Flight id and should return 404 Http Status with FlightNotFoundException message
+     */
+    @Test
+    void getFlightById_WrongFlightId_ShouldReturn404NotFound() throws Exception {
+        // GIVEN
+        UUID wrongFakeFlightId = DtoModelFaker.fakeId();
+        FlightNotFoundException expectedFlightNotFoundException =
+                new FlightNotFoundException("id", wrongFakeFlightId.toString());
+
+        when(flightService.getFlightById(wrongFakeFlightId))
+                .thenThrow(expectedFlightNotFoundException);
+
+        // WHEN
+        this.mockMvc.perform(get("/flights/{id}", wrongFakeFlightId))
+                .andDo(print())
+
+                // THEN
+                .andExpect(status().isNotFound());
+
+        verify(flightService).getFlightById(wrongFakeFlightId);
+    }
+
+    /**
      * Unit test for FlightController:addFlight
      */
     @Test
-    void testAddFlight() throws Exception {
-        // arrange
+    void addFlight_SaveIntoDatabase_ShouldSaveAndReturnSavedFlight() throws Exception {
+        // GIVEN
         UUID fakeFlightDtoId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightDtoId, true);
 
         when(this.flightService.addFlight(fakeFlightDto))
                 .thenReturn(fakeFlightDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(post("/flights")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeFlightDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -160,8 +184,8 @@ class FlightControllerTest {
      * Unit test for FlightController:addFlight
      */
     @Test
-    void testAddFlightWithBlankName_return400_BadRequest() throws Exception {
-        // arrange
+    void addAirline_WithMissingFieldValue_ShouldReturn400BadRequest() throws Exception {
+        // GIVEN
         UUID fakeFlightDtoId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightDtoId, true);
 
@@ -169,13 +193,13 @@ class FlightControllerTest {
                 .thenReturn(fakeFlightDto);
 
         fakeFlightDto.setPrice(null);
-        // act
+        // WHEN
         this.mockMvc.perform(post("/flights")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeFlightDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isBadRequest());
 
         verify(flightService, never()).addFlight(fakeFlightDto);
@@ -185,21 +209,21 @@ class FlightControllerTest {
      * Unit test for FlightController:updateFlight
      */
     @Test
-    void testUpdateFlight() throws Exception {
-        // arrange
+    void updateFlight_SaveIntoDatabase_ShouldSaveAndReturnSavedFlight() throws Exception {
+        // GIVEN
         UUID fakeFlightDtoId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightDtoId, true);
 
         when(this.flightService.updateFlight(fakeFlightDto))
                 .thenReturn(fakeFlightDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(put("/flights/{id}", fakeFlightDtoId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeFlightDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -217,19 +241,19 @@ class FlightControllerTest {
      * Unit test for FlightController:removeFlight
      */
     @Test
-    void testRemoveFlight() throws Exception {
-        // arrange
+    void removeFlight_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedFlight() throws Exception {
+        // GIVEN
         UUID fakeFlightDtoId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightDtoId, true);
 
         when(this.flightService.removeFlight(fakeFlightDtoId))
                 .thenReturn(fakeFlightDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(delete("/flights/{id}", fakeFlightDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

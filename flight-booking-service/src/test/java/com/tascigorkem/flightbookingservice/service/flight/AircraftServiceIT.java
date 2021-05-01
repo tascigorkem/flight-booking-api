@@ -41,8 +41,8 @@ class AircraftServiceIT {
      * Checking whether connection with AircraftRepository is successful
      */
     @Test
-    void testGetAllAircrafts() {
-        // arrange
+    void getAllAircrafts_RetrieveAircrafts_ShouldReturnNotDeletedAircrafts() {
+        // GIVEN
         UUID fakeAircraftId1 = EntityModelFaker.fakeId();
         UUID fakeAircraftId2 = EntityModelFaker.fakeId();
 
@@ -59,11 +59,11 @@ class AircraftServiceIT {
         aircraftRepository.saveAll(fakeAircraftEntities);
 
         Pageable pageable = PageRequest.of(0, 5);
-        // act
+        // WHEN
 
         Page<AircraftDto> resultAircraftDtoPage = aircraftService.getAllAircrafts(pageable);
 
-        // assert
+        // THEN
         assertNotNull(resultAircraftDtoPage.getContent());
         List<AircraftDto> resultAircraftDtoList = resultAircraftDtoPage.getContent();
 

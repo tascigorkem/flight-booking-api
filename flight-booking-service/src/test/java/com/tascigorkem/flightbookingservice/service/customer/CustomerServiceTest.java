@@ -29,8 +29,8 @@ class CustomerServiceTest {
      * Unit test for CustomerService:getAllCustomers
      */
     @Test
-    void testGetAllCustomers() {
-        // arrange
+    void getAllCustomers_RetrieveCustomers_ShouldReturnNotDeletedCustomers() {
+        // GIVEN
         List<CustomerEntity> fakeCustomerEntityList = Arrays.asList(
                 EntityModelFaker.getFakeCustomerEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeCustomerEntity(EntityModelFaker.fakeId(), true),
@@ -44,10 +44,10 @@ class CustomerServiceTest {
 
         when(customerRepository.findAllByDeletionTimeIsNull(pageable)).thenReturn(fakePageCustomerEntity);
 
-        // act
+        // WHEN
         Page<CustomerDto> result = subject.getAllCustomers(pageable);
 
-        // assert
+        // THEN
         assertEquals(fakeCustomerDtoList, result.toList());
         verify(customerRepository).findAllByDeletionTimeIsNull(pageable);
     }
@@ -56,18 +56,18 @@ class CustomerServiceTest {
      * Unit test for CustomerService:getCustomerById
      */
     @Test
-    void testGetCustomerById() {
-        // arrange
+    void getCustomerById_WithCustomerId_ShouldReturnCustomer() {
+        // GIVEN
         UUID fakeCustomerId = EntityModelFaker.fakeId();
         CustomerEntity fakeCustomerEntity = EntityModelFaker.getFakeCustomerEntity(fakeCustomerId, true);
         CustomerDto expectedCustomerDto = CUSTOMER_MAPPER.toCustomerDto(fakeCustomerEntity);
 
         when(customerRepository.findById(fakeCustomerId)).thenReturn(Optional.of(fakeCustomerEntity));
 
-        // act
+        // WHEN
         CustomerDto result = subject.getCustomerById(fakeCustomerId);
 
-        // assert
+        // THEN
         assertEquals(expectedCustomerDto, result);
         verify(customerRepository).findById(fakeCustomerId);
     }
@@ -76,8 +76,8 @@ class CustomerServiceTest {
      * Unit test for CustomerService:addCustomer
      */
     @Test
-    void testAddCustomer() {
-        // arrange
+    void addCustomer_SaveIntoDatabase_ShouldSaveAndReturnSavedCustomer() {
+        // GIVEN
         UUID fakeCustomerId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerId, true);
         CustomerEntity fakeCustomerEntity = CUSTOMER_MAPPER.toCustomerEntity(fakeCustomerDto);
@@ -85,10 +85,10 @@ class CustomerServiceTest {
 
         when(customerRepository.save(any(CustomerEntity.class))).thenReturn(fakeCustomerEntity);
 
-        // act
+        // WHEN
         CustomerDto result = subject.addCustomer(fakeCustomerDto);
 
-        // assert
+        // THEN
         assertEquals(expectedCustomerDto, result);
         verify(customerRepository).save(any(CustomerEntity.class));
     }
@@ -97,8 +97,8 @@ class CustomerServiceTest {
      * Unit test for CustomerService:updateCustomer
      */
     @Test
-    void testUpdateCustomer() {
-        // arrange
+    void updateCustomer_SaveIntoDatabase_ShouldSaveAndReturnSavedCustomer() {
+        // GIVEN
         UUID fakeCustomerId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerId, true);
         CustomerEntity fakeCustomerEntity = CUSTOMER_MAPPER.toCustomerEntity(fakeCustomerDto);
@@ -107,10 +107,10 @@ class CustomerServiceTest {
         when(customerRepository.findById(fakeCustomerId)).thenReturn(Optional.of(fakeCustomerEntity));
         when(customerRepository.save(fakeCustomerEntity)).thenReturn(fakeCustomerEntity);
 
-        // act
+        // WHEN
         CustomerDto result = subject.updateCustomer(fakeCustomerDto);
 
-        // assert
+        // THEN
         assertEquals(expectedCustomerDto, result);
         verify(customerRepository).findById(fakeCustomerId);
         verify(customerRepository).save(any(CustomerEntity.class));
@@ -120,8 +120,8 @@ class CustomerServiceTest {
      * Unit test for CustomerService:removeCustomer
      */
     @Test
-    void testRemoveCustomer() {
-        // arrange
+    void removeCustomer_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedCustomer() {
+        // GIVEN
         UUID fakeCustomerId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerId, true);
         CustomerEntity fakeCustomerEntity = CUSTOMER_MAPPER.toCustomerEntity(fakeCustomerDto);
@@ -130,10 +130,10 @@ class CustomerServiceTest {
         when(customerRepository.findById(fakeCustomerId)).thenReturn(Optional.of(fakeCustomerEntity));
         when(customerRepository.save(fakeCustomerEntity)).thenReturn(fakeCustomerEntity);
 
-        // act
+        // WHEN
         CustomerDto result = subject.removeCustomer(fakeCustomerId);
 
-        // assert
+        // THEN
         assertEquals(expectedCustomerDto, result);
         verify(customerRepository).findById(fakeCustomerId);
         verify(customerRepository).save(any(CustomerEntity.class));

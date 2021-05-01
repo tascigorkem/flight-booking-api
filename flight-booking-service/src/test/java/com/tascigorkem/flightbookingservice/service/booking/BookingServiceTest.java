@@ -29,8 +29,8 @@ class BookingServiceTest {
      * Unit test for BookingService:getAllBookings
      */
     @Test
-    void testGetAllBookings() {
-        // arrange
+    void getAllBookings_RetrieveBookings_ShouldReturnNotDeletedBookings() {
+        // GIVEN
         List<BookingEntity> fakeBookingEntityList = Arrays.asList(
                 EntityModelFaker.getFakeBookingEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeBookingEntity(EntityModelFaker.fakeId(), true),
@@ -44,10 +44,10 @@ class BookingServiceTest {
 
         when(bookingRepository.findAllByDeletionTimeIsNull(pageable)).thenReturn(fakePageBookingEntity);
 
-        // act
+        // WHEN
         Page<BookingDto> result = subject.getAllBookings(pageable);
 
-        // assert
+        // THEN
         assertEquals(fakeBookingDtoList, result.toList());
         verify(bookingRepository).findAllByDeletionTimeIsNull(pageable);
     }
@@ -56,18 +56,18 @@ class BookingServiceTest {
      * Unit test for BookingService:getBookingById
      */
     @Test
-    void testGetBookingById() {
-        // arrange
+    void getBookingById_WithBookingId_ShouldReturnBooking() {
+        // GIVEN
         UUID fakeBookingId = EntityModelFaker.fakeId();
         BookingEntity fakeBookingEntity = EntityModelFaker.getFakeBookingEntity(fakeBookingId, true);
         BookingDto expectedBookingDto = BOOKING_MAPPER.toBookingDto(fakeBookingEntity);
 
         when(bookingRepository.findById(fakeBookingId)).thenReturn(Optional.of(fakeBookingEntity));
 
-        // act
+        // WHEN
         BookingDto result = subject.getBookingById(fakeBookingId);
 
-        // assert
+        // THEN
         assertEquals(expectedBookingDto, result);
         verify(bookingRepository).findById(fakeBookingId);
     }
@@ -76,8 +76,8 @@ class BookingServiceTest {
      * Unit test for BookingService:addBooking
      */
     @Test
-    void testAddBooking() {
-        // arrange
+    void addBooking_SaveIntoDatabase_ShouldSaveAndReturnSavedBooking() {
+        // GIVEN
         UUID fakeBookingId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingId, true);
         BookingEntity fakeBookingEntity = BOOKING_MAPPER.toBookingEntity(fakeBookingDto);
@@ -85,10 +85,10 @@ class BookingServiceTest {
 
         when(bookingRepository.save(any(BookingEntity.class))).thenReturn(fakeBookingEntity);
 
-        // act
+        // WHEN
         BookingDto result = subject.addBooking(fakeBookingDto);
 
-        // assert
+        // THEN
         assertEquals(expectedBookingDto, result);
         verify(bookingRepository).save(any(BookingEntity.class));
     }
@@ -97,8 +97,8 @@ class BookingServiceTest {
      * Unit test for BookingService:updateBooking
      */
     @Test
-    void testUpdateBooking() {
-        // arrange
+    void updateBooking_SaveIntoDatabase_ShouldSaveAndReturnSavedBooking() {
+        // GIVEN
         UUID fakeBookingId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingId, true);
         BookingEntity fakeBookingEntity = BOOKING_MAPPER.toBookingEntity(fakeBookingDto);
@@ -107,10 +107,10 @@ class BookingServiceTest {
         when(bookingRepository.findById(fakeBookingId)).thenReturn(Optional.of(fakeBookingEntity));
         when(bookingRepository.save(fakeBookingEntity)).thenReturn(fakeBookingEntity);
 
-        // act
+        // WHEN
         BookingDto result = subject.updateBooking(fakeBookingDto);
 
-        // assert
+        // THEN
         assertEquals(expectedBookingDto, result);
         verify(bookingRepository).findById(fakeBookingId);
         verify(bookingRepository).save(any(BookingEntity.class));
@@ -120,8 +120,8 @@ class BookingServiceTest {
      * Unit test for BookingService:removeBooking
      */
     @Test
-    void testRemoveBooking() {
-        // arrange
+    void removeBooking_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedBooking() {
+        // GIVEN
         UUID fakeBookingId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingId, true);
         BookingEntity fakeBookingEntity = BOOKING_MAPPER.toBookingEntity(fakeBookingDto);
@@ -130,10 +130,10 @@ class BookingServiceTest {
         when(bookingRepository.findById(fakeBookingId)).thenReturn(Optional.of(fakeBookingEntity));
         when(bookingRepository.save(fakeBookingEntity)).thenReturn(fakeBookingEntity);
 
-        // act
+        // WHEN
         BookingDto result = subject.removeBooking(fakeBookingId);
 
-        // assert
+        // THEN
         assertEquals(expectedBookingDto, result);
         verify(bookingRepository).findById(fakeBookingId);
         verify(bookingRepository).save(any(BookingEntity.class));

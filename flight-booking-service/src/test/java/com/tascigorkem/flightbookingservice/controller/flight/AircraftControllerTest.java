@@ -2,8 +2,8 @@ package com.tascigorkem.flightbookingservice.controller.flight;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tascigorkem.flightbookingservice.controller.flight.AircraftController;
 import com.tascigorkem.flightbookingservice.dto.flight.AircraftDto;
+import com.tascigorkem.flightbookingservice.exception.notfound.AircraftNotFoundException;
 import com.tascigorkem.flightbookingservice.faker.DtoModelFaker;
 import com.tascigorkem.flightbookingservice.service.flight.AircraftService;
 import org.apache.commons.lang3.StringUtils;
@@ -46,8 +46,8 @@ class AircraftControllerTest {
      * Unit test for AircraftController:getAllAircrafts
      */
     @Test
-    void testGetAllAircrafts() throws Exception {
-        // arrange
+    void getAllAircrafts_RetrieveAircrafts_ShouldReturnNotDeletedAircrafts() throws Exception {
+        // GIVEN
         List<AircraftDto> fakeAircraftDtoList = Arrays.asList(
                 DtoModelFaker.getFakeAircraftDto(DtoModelFaker.fakeId(), true),
                 DtoModelFaker.getFakeAircraftDto(DtoModelFaker.fakeId(), true),
@@ -60,11 +60,11 @@ class AircraftControllerTest {
         when(this.aircraftService.getAllAircrafts(any(Pageable.class)))
                 .thenReturn(fakeAircraftDtoPage);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/aircrafts"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -98,19 +98,19 @@ class AircraftControllerTest {
      * Unit test for AircraftController:getAircraftById
      */
     @Test
-    void testGetAircraftById() throws Exception {
-        // arrange
+    void getAircraftById_WithAircraftId_ShouldReturnAircraft() throws Exception {
+        // GIVEN
         UUID fakeAircraftDtoId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftDtoId, true);
 
         when(this.aircraftService.getAircraftById(fakeAircraftDtoId))
                 .thenReturn(fakeAircraftDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/aircrafts/{id}", fakeAircraftDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -125,24 +125,48 @@ class AircraftControllerTest {
     }
 
     /**
+     * Unit test for AircraftController:getAircraftById
+     * Given wrong Aircraft id and should return 404 Http Status with AircraftNotFoundException message
+     */
+    @Test
+    void getAircraftById_WrongAircraftId_ShouldReturn404NotFound() throws Exception {
+        // GIVEN
+        UUID wrongFakeAircraftId = DtoModelFaker.fakeId();
+        AircraftNotFoundException expectedAircraftNotFoundException =
+                new AircraftNotFoundException("id", wrongFakeAircraftId.toString());
+
+        when(aircraftService.getAircraftById(wrongFakeAircraftId))
+                .thenThrow(expectedAircraftNotFoundException);
+
+        // WHEN
+        this.mockMvc.perform(get("/aircrafts/{id}", wrongFakeAircraftId))
+                .andDo(print())
+
+                // THEN
+                .andExpect(status().isNotFound());
+
+        verify(aircraftService).getAircraftById(wrongFakeAircraftId);
+    }
+
+    /**
      * Unit test for AircraftController:addAircraft
      */
     @Test
-    void testAddAircraft() throws Exception {
-        // arrange
+    void addAircraft_SaveIntoDatabase_ShouldSaveAndReturnSavedAircraft() throws Exception {
+        // GIVEN
         UUID fakeAircraftDtoId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftDtoId, true);
 
         when(this.aircraftService.addAircraft(fakeAircraftDto))
                 .thenReturn(fakeAircraftDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(post("/aircrafts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeAircraftDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -160,8 +184,8 @@ class AircraftControllerTest {
      * Unit test for AircraftController:addAircraft
      */
     @Test
-    void testAddAircraftWithBlankName_return400_BadRequest() throws Exception {
-        // arrange
+    void addAircraft_WithMissingFieldValue_ShouldReturn400BadRequest() throws Exception {
+        // GIVEN
         UUID fakeAircraftDtoId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftDtoId, true);
 
@@ -169,13 +193,13 @@ class AircraftControllerTest {
                 .thenReturn(fakeAircraftDto);
 
         fakeAircraftDto.setCode(StringUtils.EMPTY);
-        // act
+        // WHEN
         this.mockMvc.perform(post("/aircrafts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeAircraftDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isBadRequest());
 
         verify(aircraftService, never()).addAircraft(fakeAircraftDto);
@@ -185,21 +209,21 @@ class AircraftControllerTest {
      * Unit test for AircraftController:updateAircraft
      */
     @Test
-    void testUpdateAircraft() throws Exception {
-        // arrange
+    void updateAircraft_SaveIntoDatabase_ShouldSaveAndReturnSavedAircraft() throws Exception {
+        // GIVEN
         UUID fakeAircraftDtoId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftDtoId, true);
 
         when(this.aircraftService.updateAircraft(fakeAircraftDto))
                 .thenReturn(fakeAircraftDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(put("/aircrafts/{id}", fakeAircraftDtoId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeAircraftDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -217,19 +241,19 @@ class AircraftControllerTest {
      * Unit test for AircraftController:removeAircraft
      */
     @Test
-    void testRemoveAircraft() throws Exception {
-        // arrange
+    void removeAircraft_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedAircraft() throws Exception {
+        // GIVEN
         UUID fakeAircraftDtoId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftDtoId, true);
 
         when(this.aircraftService.removeAircraft(fakeAircraftDtoId))
                 .thenReturn(fakeAircraftDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(delete("/aircrafts/{id}", fakeAircraftDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

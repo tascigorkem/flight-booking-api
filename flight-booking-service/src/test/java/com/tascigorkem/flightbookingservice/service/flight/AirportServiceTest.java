@@ -29,8 +29,8 @@ class AirportServiceTest {
      * Unit test for AirportService:getAllAirports
      */
     @Test
-    void testGetAllAirports() {
-        // arrange
+    void getAllAirports_RetrieveAirports_ShouldReturnNotDeletedAirports() {
+        // GIVEN
         List<AirportEntity> fakeAirportEntityList = Arrays.asList(
                 EntityModelFaker.getFakeAirportEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeAirportEntity(EntityModelFaker.fakeId(), true),
@@ -44,10 +44,10 @@ class AirportServiceTest {
 
         when(airportRepository.findAllByDeletionTimeIsNull(pageable)).thenReturn(fakePageAirportEntity);
 
-        // act
+        // WHEN
         Page<AirportDto> result = subject.getAllAirports(pageable);
 
-        // assert
+        // THEN
         assertEquals(fakeAirportDtoList, result.toList());
         verify(airportRepository).findAllByDeletionTimeIsNull(pageable);
     }
@@ -56,18 +56,18 @@ class AirportServiceTest {
      * Unit test for AirportService:getAirportById
      */
     @Test
-    void testGetAirportById() {
-        // arrange
+    void getAirportById_WithAirportId_ShouldReturnAirport() {
+        // GIVEN
         UUID fakeAirportId = EntityModelFaker.fakeId();
         AirportEntity fakeAirportEntity = EntityModelFaker.getFakeAirportEntity(fakeAirportId, true);
         AirportDto expectedAirportDto = AIRPORT_MAPPER.toAirportDto(fakeAirportEntity);
 
         when(airportRepository.findById(fakeAirportId)).thenReturn(Optional.of(fakeAirportEntity));
 
-        // act
+        // WHEN
         AirportDto result = subject.getAirportById(fakeAirportId);
 
-        // assert
+        // THEN
         assertEquals(expectedAirportDto, result);
         verify(airportRepository).findById(fakeAirportId);
     }
@@ -76,8 +76,8 @@ class AirportServiceTest {
      * Unit test for AirportService:addAirport
      */
     @Test
-    void testAddAirport() {
-        // arrange
+    void addAirport_SaveIntoDatabase_ShouldSaveAndReturnSavedAirport() {
+        // GIVEN
         UUID fakeAirportId = DtoModelFaker.fakeId();
         AirportDto fakeAirportDto = DtoModelFaker.getFakeAirportDto(fakeAirportId, true);
         AirportEntity fakeAirportEntity = AIRPORT_MAPPER.toAirportEntity(fakeAirportDto);
@@ -85,10 +85,10 @@ class AirportServiceTest {
 
         when(airportRepository.save(any(AirportEntity.class))).thenReturn(fakeAirportEntity);
 
-        // act
+        // WHEN
         AirportDto result = subject.addAirport(fakeAirportDto);
 
-        // assert
+        // THEN
         assertEquals(expectedAirportDto, result);
         verify(airportRepository).save(any(AirportEntity.class));
     }
@@ -97,8 +97,8 @@ class AirportServiceTest {
      * Unit test for AirportService:updateAirport
      */
     @Test
-    void testUpdateAirport() {
-        // arrange
+    void updateAirport_SaveIntoDatabase_ShouldSaveAndReturnSavedAirport() {
+        // GIVEN
         UUID fakeAirportId = DtoModelFaker.fakeId();
         AirportDto fakeAirportDto = DtoModelFaker.getFakeAirportDto(fakeAirportId, true);
         AirportEntity fakeAirportEntity = AIRPORT_MAPPER.toAirportEntity(fakeAirportDto);
@@ -107,10 +107,10 @@ class AirportServiceTest {
         when(airportRepository.findById(fakeAirportId)).thenReturn(Optional.of(fakeAirportEntity));
         when(airportRepository.save(fakeAirportEntity)).thenReturn(fakeAirportEntity);
 
-        // act
+        // WHEN
         AirportDto result = subject.updateAirport(fakeAirportDto);
 
-        // assert
+        // THEN
         assertEquals(expectedAirportDto, result);
         verify(airportRepository).findById(fakeAirportId);
         verify(airportRepository).save(any(AirportEntity.class));
@@ -120,8 +120,8 @@ class AirportServiceTest {
      * Unit test for AirportService:removeAirport
      */
     @Test
-    void testRemoveAirport() {
-        // arrange
+    void removeAirport_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedAirport() {
+        // GIVEN
         UUID fakeAirportId = DtoModelFaker.fakeId();
         AirportDto fakeAirportDto = DtoModelFaker.getFakeAirportDto(fakeAirportId, true);
         AirportEntity fakeAirportEntity = AIRPORT_MAPPER.toAirportEntity(fakeAirportDto);
@@ -130,10 +130,10 @@ class AirportServiceTest {
         when(airportRepository.findById(fakeAirportId)).thenReturn(Optional.of(fakeAirportEntity));
         when(airportRepository.save(fakeAirportEntity)).thenReturn(fakeAirportEntity);
 
-        // act
+        // WHEN
         AirportDto result = subject.removeAirport(fakeAirportId);
 
-        // assert
+        // THEN
         assertEquals(expectedAirportDto, result);
         verify(airportRepository).findById(fakeAirportId);
         verify(airportRepository).save(any(AirportEntity.class));

@@ -34,8 +34,8 @@ class CustomerRepositoryIT {
     }
 
     @Test
-    void testFindAllByDeletionTimeIsNull() {
-        // arrange
+    void findAllByDeletionTimeIsNull_RetrieveNotDeletedEntites_ShouldReturnNotDeletedEntites() {
+        // GIVEN
         UUID fakeCustomerId1 = EntityModelFaker.fakeId();
         UUID fakeCustomerId2 = EntityModelFaker.fakeId();
 
@@ -50,11 +50,11 @@ class CustomerRepositoryIT {
         customerRepository.deleteAll();
         customerRepository.saveAll(customerEntities);
 
-        // act
+        // WHEN
         Pageable pageable = PageRequest.of(0,50);
         Page<CustomerEntity> resultCustomersEntitiesPage = customerRepository.findAllByDeletionTimeIsNull(pageable);
 
-        // assert
+        // THEN
         assertNotNull(resultCustomersEntitiesPage.getContent());
         List<CustomerEntity> resultCustomersEntities = resultCustomersEntitiesPage.getContent();
 
@@ -85,7 +85,7 @@ class CustomerRepositoryIT {
 
     @Test
     void testCustomerRelations() {
-        // arrange
+        // GIVEN
         UUID fakeCustomerId = EntityModelFaker.fakeId();
         UUID fakeBookingId = EntityModelFaker.fakeId();
 
@@ -98,10 +98,10 @@ class CustomerRepositoryIT {
         fakeBookingEntity.setCustomer(fakeCustomerEntity);
         bookingRepository.save(fakeBookingEntity);
 
-        // act
+        // WHEN
         Optional<CustomerEntity> resultOptCustomerEntity = customerRepository.findById(fakeCustomerId);
 
-        // assert
+        // THEN
         assertTrue(resultOptCustomerEntity.isPresent());
         CustomerEntity resultCustomerEntity = resultOptCustomerEntity.get();
 

@@ -3,6 +3,7 @@ package com.tascigorkem.flightbookingservice.controller.customer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tascigorkem.flightbookingservice.dto.customer.CustomerDto;
+import com.tascigorkem.flightbookingservice.exception.notfound.CustomerNotFoundException;
 import com.tascigorkem.flightbookingservice.faker.DtoModelFaker;
 import com.tascigorkem.flightbookingservice.service.customer.CustomerService;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,8 +47,8 @@ class CustomerControllerTest {
      * Unit test for CustomerController:getAllCustomers
      */
     @Test
-    void testGetAllCustomers() throws Exception {
-        // arrange
+    void getAllCustomers_RetrieveCustomers_ShouldReturnNotDeletedCustomers() throws Exception {
+        // GIVEN
         List<CustomerDto> fakeCustomerDtoList = Arrays.asList(
                 DtoModelFaker.getFakeCustomerDto(DtoModelFaker.fakeId(), true),
                 DtoModelFaker.getFakeCustomerDto(DtoModelFaker.fakeId(), true),
@@ -59,11 +61,11 @@ class CustomerControllerTest {
         when(this.customerService.getAllCustomers(any(Pageable.class)))
                 .thenReturn(fakeCustomerDtoPage);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/customers"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -97,19 +99,19 @@ class CustomerControllerTest {
      * Unit test for CustomerController:getCustomerById
      */
     @Test
-    void testGetCustomerById() throws Exception {
-        // arrange
+    void getCustomerById_WithCustomerId_ShouldReturnCustomer() throws Exception {
+        // GIVEN
         UUID fakeCustomerDtoId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerDtoId, true);
 
         when(this.customerService.getCustomerById(fakeCustomerDtoId))
                 .thenReturn(fakeCustomerDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/customers/{id}", fakeCustomerDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -124,24 +126,48 @@ class CustomerControllerTest {
     }
 
     /**
+     * Unit test for CustomerController:getCustomerById
+     * Given wrong Customer id and should return 404 Http Status with CustomerNotFoundException message
+     */
+    @Test
+    void getCustomerById_WrongCustomerId_ShouldReturn404NotFound() throws Exception {
+        // GIVEN
+        UUID wrongFakeCustomerId = DtoModelFaker.fakeId();
+        CustomerNotFoundException expectedCustomerNotFoundException =
+                new CustomerNotFoundException("id", wrongFakeCustomerId.toString());
+
+        when(customerService.getCustomerById(wrongFakeCustomerId))
+                .thenThrow(expectedCustomerNotFoundException);
+
+        // WHEN
+        this.mockMvc.perform(get("/customers/{id}", wrongFakeCustomerId))
+                .andDo(print())
+
+                // THEN
+                .andExpect(status().isNotFound());
+
+        verify(customerService).getCustomerById(wrongFakeCustomerId);
+    }
+
+    /**
      * Unit test for CustomerController:addCustomer
      */
     @Test
-    void testAddCustomer() throws Exception {
-        // arrange
+    void addCustomer_SaveIntoDatabase_ShouldSaveAndReturnSavedCustomer() throws Exception {
+        // GIVEN
         UUID fakeCustomerDtoId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerDtoId, true);
 
         when(this.customerService.addCustomer(fakeCustomerDto))
                 .thenReturn(fakeCustomerDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeCustomerDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -159,8 +185,8 @@ class CustomerControllerTest {
      * Unit test for CustomerController:addCustomer
      */
     @Test
-    void testAddCustomerWithBlankName_return400_BadRequest() throws Exception {
-        // arrange
+    void addCustomer_WithMissingFieldValue_ShouldReturn400BadRequest() throws Exception {
+        // GIVEN
         UUID fakeCustomerDtoId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerDtoId, true);
 
@@ -168,13 +194,13 @@ class CustomerControllerTest {
                 .thenReturn(fakeCustomerDto);
 
         fakeCustomerDto.setName(StringUtils.EMPTY);
-        // act
+        // WHEN
         this.mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeCustomerDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isBadRequest());
 
         verify(customerService, never()).addCustomer(fakeCustomerDto);
@@ -184,21 +210,21 @@ class CustomerControllerTest {
      * Unit test for CustomerController:updateCustomer
      */
     @Test
-    void testUpdateCustomer() throws Exception {
-        // arrange
+    void updateCustomer_SaveIntoDatabase_ShouldSaveAndReturnSavedCustomer() throws Exception {
+        // GIVEN
         UUID fakeCustomerDtoId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerDtoId, true);
 
         when(this.customerService.updateCustomer(fakeCustomerDto))
                 .thenReturn(fakeCustomerDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(put("/customers/{id}", fakeCustomerDtoId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeCustomerDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -216,19 +242,19 @@ class CustomerControllerTest {
      * Unit test for CustomerController:removeCustomer
      */
     @Test
-    void testRemoveCustomer() throws Exception {
-        // arrange
+    void removeCustomer_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedCustomer() throws Exception {
+        // GIVEN
         UUID fakeCustomerDtoId = DtoModelFaker.fakeId();
         CustomerDto fakeCustomerDto = DtoModelFaker.getFakeCustomerDto(fakeCustomerDtoId, true);
 
         when(this.customerService.removeCustomer(fakeCustomerDtoId))
                 .thenReturn(fakeCustomerDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(delete("/customers/{id}", fakeCustomerDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

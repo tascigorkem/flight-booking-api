@@ -50,8 +50,8 @@ class AirlineControllerIT {
      * Checking whether connection with AirlineService is successful
      */
     @Test
-    void testGetAllAirlines() throws Exception {
-        // arrange
+    void getAllAirlines_RetrieveAirlines_ShouldReturnNotDeletedAirlines() throws Exception {
+        // GIVEN
         List<AirlineEntity> fakeAirlineEntityList = Arrays.asList(
                 EntityModelFaker.getFakeAirlineEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeAirlineEntity(EntityModelFaker.fakeId(), true),
@@ -67,11 +67,11 @@ class AirlineControllerIT {
         List<AirlineDto> fakeAirlineDtoList = AIRLINE_MAPPER.toAirlineDtoList(fakeAirlineEntityList);
         PageImpl<AirlineDto> fakeAirlineDtoPage = new PageImpl<>(fakeAirlineDtoList, pageable, fakeAirlineDtoList.size());
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/airlines"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

@@ -39,17 +39,17 @@ class FlightControllerEnd2EndIT {
      * E2E test for FlightController:getAllFlights
      */
     @Test
-    void testGetFlightById() throws JsonProcessingException {
-        // arrange
+    void getFlightById_WithFlightId_ShouldReturnFlight() throws JsonProcessingException {
+        // GIVEN
         UUID fakeFlightEntityId = EntityModelFaker.fakeId();
         FlightEntity fakeFlightEntity = EntityModelFaker.getFakeFlightEntity(fakeFlightEntityId, false);
         flightRepository.save(fakeFlightEntity);
 
-        // act
+        // WHEN
         ResponseEntity<String> response = this.restTemplate.getForEntity(
                 "/flights/" + fakeFlightEntityId, String.class);
 
-        // assert
+        // THEN
         assertEquals(HttpStatus.OK, response.getStatusCode());
         JsonNode flightDtoJsonNode = objectMapper.readTree(response.getBody());
 
