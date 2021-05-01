@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import static com.tascigorkem.flightbookingservice.service.flight.AirportMapper.
 
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class AirportServiceImpl implements AirportService {
 
