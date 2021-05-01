@@ -33,8 +33,8 @@ class AircraftRepositoryIT {
     }
 
     @Test
-    void testFindAllByDeletionTimeIsNull() {
-        // arrange
+    void findAllByDeletionTimeIsNull_RetrieveNotDeletedEntites_ShouldReturnNotDeletedEntites() {
+        // GIVEN
         UUID fakeAircraftId1 = EntityModelFaker.fakeId();
         UUID fakeAircraftId2 = EntityModelFaker.fakeId();
 
@@ -49,11 +49,11 @@ class AircraftRepositoryIT {
         aircraftRepository.deleteAll();
         aircraftRepository.saveAll(aircraftEntities);
 
-        // act
+        // WHEN
         Pageable pageable = PageRequest.of(0, 50);
         Page<AircraftEntity> resultAircraftEntitiesPage = aircraftRepository.findAllByDeletionTimeIsNull(pageable);
 
-        // assert
+        // THEN
         assertNotNull(resultAircraftEntitiesPage.getContent());
         List<AircraftEntity> resultAircraftEntities = resultAircraftEntitiesPage.getContent();
 
@@ -81,7 +81,7 @@ class AircraftRepositoryIT {
 
     @Test
     void testAircraftRelations() {
-        // arrange
+        // GIVEN
         UUID fakeAircraftId = EntityModelFaker.fakeId();
         UUID fakeFlightId = EntityModelFaker.fakeId();
 
@@ -95,10 +95,10 @@ class AircraftRepositoryIT {
         fakeFlightEntity.setAircraft(fakeAircraftEntity);
         flightRepository.save(fakeFlightEntity);
 
-        // act
+        // WHEN
         Optional<AircraftEntity> resultOptAircraftEntity = aircraftRepository.findById(fakeAircraftId);
 
-        // assert
+        // THEN
         assertTrue(resultOptAircraftEntity.isPresent());
         AircraftEntity resultAircraftEntity = resultOptAircraftEntity.get();
 

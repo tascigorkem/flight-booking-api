@@ -29,8 +29,8 @@ class FlightServiceTest {
      * Unit test for FlightService:getAllFlights
      */
     @Test
-    void testGetAllFlights() {
-        // arrange
+    void getAllFlights_RetrieveFlights_ShouldReturnNotDeletedFlights() {
+        // GIVEN
         List<FlightEntity> fakeFlightEntityList = Arrays.asList(
                 EntityModelFaker.getFakeFlightEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeFlightEntity(EntityModelFaker.fakeId(), true),
@@ -44,10 +44,10 @@ class FlightServiceTest {
 
         when(flightRepository.findAllByDeletionTimeIsNull(pageable)).thenReturn(fakePageFlightEntity);
 
-        // act
+        // WHEN
         Page<FlightDto> result = subject.getAllFlights(pageable);
 
-        // assert
+        // THEN
         assertEquals(fakeFlightDtoList, result.toList());
         verify(flightRepository).findAllByDeletionTimeIsNull(pageable);
     }
@@ -56,18 +56,18 @@ class FlightServiceTest {
      * Unit test for FlightService:getFlightById
      */
     @Test
-    void testGetFlightById() {
-        // arrange
+    void getFlightById_WithFlightId_ShouldReturnFlight() {
+        // GIVEN
         UUID fakeFlightId = EntityModelFaker.fakeId();
         FlightEntity fakeFlightEntity = EntityModelFaker.getFakeFlightEntity(fakeFlightId, true);
         FlightDto expectedFlightDto = FLIGHT_MAPPER.toFlightDto(fakeFlightEntity);
 
         when(flightRepository.findById(fakeFlightId)).thenReturn(Optional.of(fakeFlightEntity));
 
-        // act
+        // WHEN
         FlightDto result = subject.getFlightById(fakeFlightId);
 
-        // assert
+        // THEN
         assertEquals(expectedFlightDto, result);
         verify(flightRepository).findById(fakeFlightId);
     }
@@ -76,8 +76,8 @@ class FlightServiceTest {
      * Unit test for FlightService:addFlight
      */
     @Test
-    void testAddFlight() {
-        // arrange
+    void addFlight_SaveIntoDatabase_ShouldSaveAndReturnSavedFlight() {
+        // GIVEN
         UUID fakeFlightId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightId, true);
         FlightEntity fakeFlightEntity = FLIGHT_MAPPER.toFlightEntity(fakeFlightDto);
@@ -85,10 +85,10 @@ class FlightServiceTest {
 
         when(flightRepository.save(any(FlightEntity.class))).thenReturn(fakeFlightEntity);
 
-        // act
+        // WHEN
         FlightDto result = subject.addFlight(fakeFlightDto);
 
-        // assert
+        // THEN
         assertEquals(expectedFlightDto, result);
         verify(flightRepository).save(any(FlightEntity.class));
     }
@@ -97,8 +97,8 @@ class FlightServiceTest {
      * Unit test for FlightService:updateFlight
      */
     @Test
-    void testUpdateFlight() {
-        // arrange
+    void updateFlight_SaveIntoDatabase_ShouldSaveAndReturnSavedFlight() {
+        // GIVEN
         UUID fakeFlightId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightId, true);
         FlightEntity fakeFlightEntity = FLIGHT_MAPPER.toFlightEntity(fakeFlightDto);
@@ -107,10 +107,10 @@ class FlightServiceTest {
         when(flightRepository.findById(fakeFlightId)).thenReturn(Optional.of(fakeFlightEntity));
         when(flightRepository.save(fakeFlightEntity)).thenReturn(fakeFlightEntity);
 
-        // act
+        // WHEN
         FlightDto result = subject.updateFlight(fakeFlightDto);
 
-        // assert
+        // THEN
         assertEquals(expectedFlightDto, result);
         verify(flightRepository).findById(fakeFlightId);
         verify(flightRepository).save(any(FlightEntity.class));
@@ -120,8 +120,8 @@ class FlightServiceTest {
      * Unit test for FlightService:removeFlight
      */
     @Test
-    void testRemoveFlight() {
-        // arrange
+    void removeFlight_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedFlight() {
+        // GIVEN
         UUID fakeFlightId = DtoModelFaker.fakeId();
         FlightDto fakeFlightDto = DtoModelFaker.getFakeFlightDto(fakeFlightId, true);
         FlightEntity fakeFlightEntity = FLIGHT_MAPPER.toFlightEntity(fakeFlightDto);
@@ -130,10 +130,10 @@ class FlightServiceTest {
         when(flightRepository.findById(fakeFlightId)).thenReturn(Optional.of(fakeFlightEntity));
         when(flightRepository.save(fakeFlightEntity)).thenReturn(fakeFlightEntity);
 
-        // act
+        // WHEN
         FlightDto result = subject.removeFlight(fakeFlightId);
 
-        // assert
+        // THEN
         assertEquals(expectedFlightDto, result);
         verify(flightRepository).findById(fakeFlightId);
         verify(flightRepository).save(any(FlightEntity.class));

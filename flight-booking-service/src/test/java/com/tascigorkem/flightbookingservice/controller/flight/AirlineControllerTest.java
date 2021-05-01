@@ -3,6 +3,7 @@ package com.tascigorkem.flightbookingservice.controller.flight;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tascigorkem.flightbookingservice.dto.flight.AirlineDto;
+import com.tascigorkem.flightbookingservice.exception.notfound.AirlineNotFoundException;
 import com.tascigorkem.flightbookingservice.faker.DtoModelFaker;
 import com.tascigorkem.flightbookingservice.service.flight.AirlineService;
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +46,8 @@ class AirlineControllerTest {
      * Unit test for AirlineController:getAllAirlines
      */
     @Test
-    void testGetAllAirlines() throws Exception {
-        // arrange
+    void getAllAirlines_RetrieveAirlines_ShouldReturnNotDeletedAirlines() throws Exception {
+        // GIVEN
         List<AirlineDto> fakeAirlineDtoList = Arrays.asList(
                 DtoModelFaker.getFakeAirlineDto(DtoModelFaker.fakeId(), true),
                 DtoModelFaker.getFakeAirlineDto(DtoModelFaker.fakeId(), true),
@@ -59,11 +60,11 @@ class AirlineControllerTest {
         when(this.airlineService.getAllAirlines(any(Pageable.class)))
                 .thenReturn(fakeAirlineDtoPage);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/airlines"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -97,19 +98,19 @@ class AirlineControllerTest {
      * Unit test for AirlineController:getAirlineById
      */
     @Test
-    void testGetAirlineById() throws Exception {
-        // arrange
+    void getAirlineById_WithAirlineId_ShouldReturnAirline() throws Exception {
+        // GIVEN
         UUID fakeAirlineDtoId = DtoModelFaker.fakeId();
         AirlineDto fakeAirlineDto = DtoModelFaker.getFakeAirlineDto(fakeAirlineDtoId, true);
 
         when(this.airlineService.getAirlineById(fakeAirlineDtoId))
                 .thenReturn(fakeAirlineDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/airlines/{id}", fakeAirlineDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -124,24 +125,48 @@ class AirlineControllerTest {
     }
 
     /**
+     * Unit test for AirlineController:getAirlineById
+     * Given wrong Airline id and should return 404 Http Status with AirlineNotFoundException message
+     */
+    @Test
+    void getAirlineById_WrongAirlineId_ShouldReturn404NotFound() throws Exception {
+        // GIVEN
+        UUID wrongFakeAirlineId = DtoModelFaker.fakeId();
+        AirlineNotFoundException expectedAirlineNotFoundException =
+                new AirlineNotFoundException("id", wrongFakeAirlineId.toString());
+
+        when(airlineService.getAirlineById(wrongFakeAirlineId))
+                .thenThrow(expectedAirlineNotFoundException);
+
+        // WHEN
+        this.mockMvc.perform(get("/airlines/{id}", wrongFakeAirlineId))
+                .andDo(print())
+
+                // THEN
+                .andExpect(status().isNotFound());
+
+        verify(airlineService).getAirlineById(wrongFakeAirlineId);
+    }
+
+    /**
      * Unit test for AirlineController:addAirline
      */
     @Test
-    void testAddAirline() throws Exception {
-        // arrange
+    void addAirline_SaveIntoDatabase_ShouldSaveAndReturnSavedAirline() throws Exception {
+        // GIVEN
         UUID fakeAirlineDtoId = DtoModelFaker.fakeId();
         AirlineDto fakeAirlineDto = DtoModelFaker.getFakeAirlineDto(fakeAirlineDtoId, true);
 
         when(this.airlineService.addAirline(fakeAirlineDto))
                 .thenReturn(fakeAirlineDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(post("/airlines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeAirlineDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -159,8 +184,8 @@ class AirlineControllerTest {
      * Unit test for AirlineController:addAirline
      */
     @Test
-    void testAddAirlineWithBlankName_return400_BadRequest() throws Exception {
-        // arrange
+    void addAirline_WithMissingFieldValue_ShouldReturn400BadRequest() throws Exception {
+        // GIVEN
         UUID fakeAirlineDtoId = DtoModelFaker.fakeId();
         AirlineDto fakeAirlineDto = DtoModelFaker.getFakeAirlineDto(fakeAirlineDtoId, true);
 
@@ -168,13 +193,13 @@ class AirlineControllerTest {
                 .thenReturn(fakeAirlineDto);
 
         fakeAirlineDto.setName(StringUtils.EMPTY);
-        // act
+        // WHEN
         this.mockMvc.perform(post("/airlines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeAirlineDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isBadRequest());
 
         verify(airlineService, never()).addAirline(fakeAirlineDto);
@@ -184,21 +209,21 @@ class AirlineControllerTest {
      * Unit test for AirlineController:updateAirline
      */
     @Test
-    void testUpdateAirline() throws Exception {
-        // arrange
+    void updateAirline_SaveIntoDatabase_ShouldSaveAndReturnSavedAirline() throws Exception {
+        // GIVEN
         UUID fakeAirlineDtoId = DtoModelFaker.fakeId();
         AirlineDto fakeAirlineDto = DtoModelFaker.getFakeAirlineDto(fakeAirlineDtoId, true);
 
         when(this.airlineService.updateAirline(fakeAirlineDto))
                 .thenReturn(fakeAirlineDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(put("/airlines/{id}", fakeAirlineDtoId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeAirlineDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -216,19 +241,19 @@ class AirlineControllerTest {
      * Unit test for AirlineController:removeAirline
      */
     @Test
-    void testRemoveAirline() throws Exception {
-        // arrange
+    void removeAirline_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedAirline() throws Exception {
+        // GIVEN
         UUID fakeAirlineDtoId = DtoModelFaker.fakeId();
         AirlineDto fakeAirlineDto = DtoModelFaker.getFakeAirlineDto(fakeAirlineDtoId, true);
 
         when(this.airlineService.removeAirline(fakeAirlineDtoId))
                 .thenReturn(fakeAirlineDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(delete("/airlines/{id}", fakeAirlineDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {

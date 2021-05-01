@@ -38,17 +38,17 @@ class AirportControllerEnd2EndIT {
      * E2E test for AirportController:getAllAirports
      */
     @Test
-    void testGetAirportById() throws JsonProcessingException {
-        // arrange
+    void getAirportById_WithAirportId_ShouldReturnAirport() throws JsonProcessingException {
+        // GIVEN
         UUID fakeAirportEntityId = EntityModelFaker.fakeId();
         AirportEntity fakeAirportEntity = EntityModelFaker.getFakeAirportEntity(fakeAirportEntityId, false);
         airportRepository.save(fakeAirportEntity);
 
-        // act
+        // WHEN
         ResponseEntity<String> response = this.restTemplate.getForEntity(
                 "/airports/" + fakeAirportEntityId, String.class);
 
-        // assert
+        // THEN
         assertEquals(HttpStatus.OK, response.getStatusCode());
         JsonNode airportDtoJsonNode = objectMapper.readTree(response.getBody());
 

@@ -29,8 +29,8 @@ class AircraftServiceTest {
      * Unit test for AircraftService:getAllAircrafts
      */
     @Test
-    void testGetAllAircrafts() {
-        // arrange
+    void getAllAircrafts_RetrieveAircrafts_ShouldReturnNotDeletedAircrafts() {
+        // GIVEN
         List<AircraftEntity> fakeAircraftEntityList = Arrays.asList(
                 EntityModelFaker.getFakeAircraftEntity(EntityModelFaker.fakeId(), true),
                 EntityModelFaker.getFakeAircraftEntity(EntityModelFaker.fakeId(), true),
@@ -44,10 +44,10 @@ class AircraftServiceTest {
 
         when(aircraftRepository.findAllByDeletionTimeIsNull(pageable)).thenReturn(fakePageAircraftEntity);
 
-        // act
+        // WHEN
         Page<AircraftDto> result = subject.getAllAircrafts(pageable);
 
-        // assert
+        // THEN
         assertEquals(fakeAircraftDtoList, result.toList());
         verify(aircraftRepository).findAllByDeletionTimeIsNull(pageable);
     }
@@ -56,18 +56,18 @@ class AircraftServiceTest {
      * Unit test for AircraftService:getAircraftById
      */
     @Test
-    void testGetAircraftById() {
-        // arrange
+    void getAircraftById_WithAircraftId_ShouldReturnAircraft() {
+        // GIVEN
         UUID fakeAircraftId = EntityModelFaker.fakeId();
         AircraftEntity fakeAircraftEntity = EntityModelFaker.getFakeAircraftEntity(fakeAircraftId, true);
         AircraftDto expectedAircraftDto = AIRCRAFT_MAPPER.toAircraftDto(fakeAircraftEntity);
 
         when(aircraftRepository.findById(fakeAircraftId)).thenReturn(Optional.of(fakeAircraftEntity));
 
-        // act
+        // WHEN
         AircraftDto result = subject.getAircraftById(fakeAircraftId);
 
-        // assert
+        // THEN
         assertEquals(expectedAircraftDto, result);
         verify(aircraftRepository).findById(fakeAircraftId);
     }
@@ -76,8 +76,8 @@ class AircraftServiceTest {
      * Unit test for AircraftService:addAircraft
      */
     @Test
-    void testAddAircraft() {
-        // arrange
+    void addAircraft_SaveIntoDatabase_ShouldSaveAndReturnSavedAircraft() {
+        // GIVEN
         UUID fakeAircraftId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftId, true);
         AircraftEntity fakeAircraftEntity = AIRCRAFT_MAPPER.toAircraftEntity(fakeAircraftDto);
@@ -85,10 +85,10 @@ class AircraftServiceTest {
 
         when(aircraftRepository.save(any(AircraftEntity.class))).thenReturn(fakeAircraftEntity);
 
-        // act
+        // WHEN
         AircraftDto result = subject.addAircraft(fakeAircraftDto);
 
-        // assert
+        // THEN
         assertEquals(expectedAircraftDto, result);
         verify(aircraftRepository).save(any(AircraftEntity.class));
     }
@@ -97,8 +97,8 @@ class AircraftServiceTest {
      * Unit test for AircraftService:updateAircraft
      */
     @Test
-    void testUpdateAircraft() {
-        // arrange
+    void updateAircraft_SaveIntoDatabase_ShouldSaveAndReturnSavedAircraft() {
+        // GIVEN
         UUID fakeAircraftId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftId, true);
         AircraftEntity fakeAircraftEntity = AIRCRAFT_MAPPER.toAircraftEntity(fakeAircraftDto);
@@ -107,10 +107,10 @@ class AircraftServiceTest {
         when(aircraftRepository.findById(fakeAircraftId)).thenReturn(Optional.of(fakeAircraftEntity));
         when(aircraftRepository.save(fakeAircraftEntity)).thenReturn(fakeAircraftEntity);
 
-        // act
+        // WHEN
         AircraftDto result = subject.updateAircraft(fakeAircraftDto);
 
-        // assert
+        // THEN
         assertEquals(expectedAircraftDto, result);
         verify(aircraftRepository).findById(fakeAircraftId);
         verify(aircraftRepository).save(any(AircraftEntity.class));
@@ -120,8 +120,8 @@ class AircraftServiceTest {
      * Unit test for AircraftService:removeAircraft
      */
     @Test
-    void testRemoveAircraft() {
-        // arrange
+    void removeAircraft_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedAircraft() {
+        // GIVEN
         UUID fakeAircraftId = DtoModelFaker.fakeId();
         AircraftDto fakeAircraftDto = DtoModelFaker.getFakeAircraftDto(fakeAircraftId, true);
         AircraftEntity fakeAircraftEntity = AIRCRAFT_MAPPER.toAircraftEntity(fakeAircraftDto);
@@ -130,10 +130,10 @@ class AircraftServiceTest {
         when(aircraftRepository.findById(fakeAircraftId)).thenReturn(Optional.of(fakeAircraftEntity));
         when(aircraftRepository.save(fakeAircraftEntity)).thenReturn(fakeAircraftEntity);
 
-        // act
+        // WHEN
         AircraftDto result = subject.removeAircraft(fakeAircraftId);
 
-        // assert
+        // THEN
         assertEquals(expectedAircraftDto, result);
         verify(aircraftRepository).findById(fakeAircraftId);
         verify(aircraftRepository).save(any(AircraftEntity.class));

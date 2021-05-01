@@ -39,17 +39,17 @@ class CustomerControllerEnd2EndIT {
      * E2E test for CustomerController:getAllCustomers
      */
     @Test
-    void testGetCustomerById() throws JsonProcessingException {
-        // arrange
+    void getCustomerById_WithCustomerId_ShouldReturnCustomer() throws JsonProcessingException {
+        // GIVEN
         UUID fakeCustomerEntityId = EntityModelFaker.fakeId();
         CustomerEntity fakeCustomerEntity = EntityModelFaker.getFakeCustomerEntity(fakeCustomerEntityId, false);
         customerRepository.save(fakeCustomerEntity);
 
-        // act
+        // WHEN
         ResponseEntity<String> response = this.restTemplate.getForEntity(
                 "/customers/" + fakeCustomerEntityId, String.class);
 
-        // assert
+        // THEN
         assertEquals(HttpStatus.OK, response.getStatusCode());
         JsonNode customerDtoJsonNode = objectMapper.readTree(response.getBody());
 

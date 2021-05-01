@@ -41,8 +41,8 @@ class AirportServiceIT {
      * Checking whether connection with AirportRepository is successful
      */
     @Test
-    void testGetAllAirports() {
-        // arrange
+    void getAllAirports_RetrieveAirports_ShouldReturnNotDeletedAirports() {
+        // GIVEN
         UUID fakeAirportId1 = EntityModelFaker.fakeId();
         UUID fakeAirportId2 = EntityModelFaker.fakeId();
 
@@ -59,11 +59,11 @@ class AirportServiceIT {
         airportRepository.saveAll(fakeAirportEntities);
 
         Pageable pageable = PageRequest.of(0, 5);
-        // act
+        // WHEN
 
         Page<AirportDto> resultAirportDtoPage = airportService.getAllAirports(pageable);
 
-        // assert
+        // THEN
         assertNotNull(resultAirportDtoPage.getContent());
         List<AirportDto> resultAirportDtoList = resultAirportDtoPage.getContent();
 

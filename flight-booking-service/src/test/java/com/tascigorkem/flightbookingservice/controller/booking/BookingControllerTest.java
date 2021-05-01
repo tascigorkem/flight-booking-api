@@ -3,6 +3,7 @@ package com.tascigorkem.flightbookingservice.controller.booking;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tascigorkem.flightbookingservice.dto.booking.BookingDto;
+import com.tascigorkem.flightbookingservice.exception.notfound.BookingNotFoundException;
 import com.tascigorkem.flightbookingservice.faker.DtoModelFaker;
 import com.tascigorkem.flightbookingservice.service.booking.BookingService;
 import org.apache.commons.lang3.StringUtils;
@@ -46,8 +47,8 @@ class BookingControllerTest {
      * Unit test for BookingController:getAllBookings
      */
     @Test
-    void testGetAllBookings() throws Exception {
-        // arrange
+    void getAllBookings_RetrieveBookings_ShouldReturnNotDeletedBookings() throws Exception {
+        // GIVEN
         List<BookingDto> fakeBookingDtoList = Arrays.asList(
                 DtoModelFaker.getFakeBookingDto(DtoModelFaker.fakeId(), true),
                 DtoModelFaker.getFakeBookingDto(DtoModelFaker.fakeId(), true),
@@ -60,11 +61,11 @@ class BookingControllerTest {
         when(this.bookingService.getAllBookings(any(Pageable.class)))
                 .thenReturn(fakeBookingDtoPage);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/bookings"))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -98,19 +99,19 @@ class BookingControllerTest {
      * Unit test for BookingController:getBookingById
      */
     @Test
-    void testGetBookingById() throws Exception {
-        // arrange
+    void getBookingById_WithBookingId_ShouldReturnBooking() throws Exception {
+        // GIVEN
         UUID fakeBookingDtoId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingDtoId, true);
 
         when(this.bookingService.getBookingById(fakeBookingDtoId))
                 .thenReturn(fakeBookingDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(get("/bookings/{id}", fakeBookingDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -125,24 +126,48 @@ class BookingControllerTest {
     }
 
     /**
+     * Unit test for BookingController:getBookingById
+     * Given wrong Booking id and should return 404 Http Status with BookingNotFoundException message
+     */
+    @Test
+    void getBookingById_WrongBookingId_ShouldReturn404NotFound() throws Exception {
+        // GIVEN
+        UUID wrongFakeBookingId = DtoModelFaker.fakeId();
+        BookingNotFoundException expectedBookingNotFoundException =
+                new BookingNotFoundException("id", wrongFakeBookingId.toString());
+
+        when(bookingService.getBookingById(wrongFakeBookingId))
+                .thenThrow(expectedBookingNotFoundException);
+
+        // WHEN
+        this.mockMvc.perform(get("/bookings/{id}", wrongFakeBookingId))
+                .andDo(print())
+
+                // THEN
+                .andExpect(status().isNotFound());
+
+        verify(bookingService).getBookingById(wrongFakeBookingId);
+    }
+
+    /**
      * Unit test for BookingController:addBooking
      */
     @Test
-    void testAddBooking() throws Exception {
-        // arrange
+    void addBooking_SaveIntoDatabase_ShouldSaveAndReturnSavedBooking() throws Exception {
+        // GIVEN
         UUID fakeBookingDtoId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingDtoId, true);
 
         when(this.bookingService.addBooking(fakeBookingDto))
                 .thenReturn(fakeBookingDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(post("/bookings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeBookingDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -160,8 +185,8 @@ class BookingControllerTest {
      * Unit test for BookingController:addBooking
      */
     @Test
-    void testAddBookingWithBlankName_return400_BadRequest() throws Exception {
-        // arrange
+    void addBooking_WithMissingFieldValue_ShouldReturn400BadRequest() throws Exception {
+        // GIVEN
         UUID fakeBookingDtoId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingDtoId, true);
 
@@ -169,13 +194,13 @@ class BookingControllerTest {
                 .thenReturn(fakeBookingDto);
 
         fakeBookingDto.setState(StringUtils.EMPTY);
-        // act
+        // WHEN
         this.mockMvc.perform(post("/bookings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeBookingDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isBadRequest());
 
         verify(bookingService, never()).addBooking(fakeBookingDto);
@@ -185,21 +210,21 @@ class BookingControllerTest {
      * Unit test for BookingController:updateBooking
      */
     @Test
-    void testUpdateBooking() throws Exception {
-        // arrange
+    void updateBooking_SaveIntoDatabase_ShouldSaveAndReturnSavedBooking() throws Exception {
+        // GIVEN
         UUID fakeBookingDtoId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingDtoId, true);
 
         when(this.bookingService.updateBooking(fakeBookingDto))
                 .thenReturn(fakeBookingDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(put("/bookings/{id}", fakeBookingDtoId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(fakeBookingDto)))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
@@ -217,19 +242,19 @@ class BookingControllerTest {
      * Unit test for BookingController:removeBooking
      */
     @Test
-    void testRemoveBooking() throws Exception {
-        // arrange
+    void removeBooking_SetStatusDAndSaveIntoDatabase_ShouldSaveAndReturnRemovedBooking() throws Exception {
+        // GIVEN
         UUID fakeBookingDtoId = DtoModelFaker.fakeId();
         BookingDto fakeBookingDto = DtoModelFaker.getFakeBookingDto(fakeBookingDtoId, true);
 
         when(this.bookingService.removeBooking(fakeBookingDtoId))
                 .thenReturn(fakeBookingDto);
 
-        // act
+        // WHEN
         this.mockMvc.perform(delete("/bookings/{id}", fakeBookingDtoId))
                 .andDo(print())
 
-                // assert
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaTypes.HAL_JSON_VALUE))
                 .andExpect(result -> {
