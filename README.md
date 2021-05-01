@@ -1,21 +1,11 @@
 ## Flight Booking System
 
 <p align="center">
-    <a alt="Java">
-        <img src="https://img.shields.io/badge/Java-v1.11-orange.svg" />
-    </a>
-    <a alt="Spring Boot">
-        <img src="https://img.shields.io/badge/Spring%20Boot-v2.3.9-brightgreen.svg" />
-    </a>
-    <a alt="Dependencies">
-        <img src="https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg" />
-    </a>
-    <a alt="Contributions">
-        <img src="https://img.shields.io/badge/contributions-welcome-orange.svg" />
-    </a>
-    <a alt="Licence">
-        <img src="https://img.shields.io/github/license/tascigorkem/flight-booking-api">
-    </a>
+    <img src="https://img.shields.io/badge/Java-v1.11-orange.svg" />
+    <img src="https://img.shields.io/badge/Spring%20Boot-v2.3.9-brightgreen.svg" />
+    <img src="https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg" />
+    <img src="https://img.shields.io/badge/contributions-welcome-orange.svg" />
+    <img src="https://img.shields.io/github/license/tascigorkem/flight-booking-api">
 </p>
 
 HATEOAS Driven Rest Api - Microservice Architecture with Spring Cloud, Docker, Kafka and ELK.
@@ -66,7 +56,6 @@ PS: For local development, up docker-compose-kafka-local.yml, then start microse
 docker-compose -f docker-compose-kafka-local.yml up -d
 `
 
-
 ### Test & Validation
 
 JUnit5, Mockito and Github-Faker are used in this project.
@@ -85,6 +74,15 @@ This snippet checks whether invalid request returns the HTTP status 400 Bad Requ
 
 <img src="./docs/400-bad-request-postman.jpg" alt="" width="600">
 
+<img src="./docs/code-snippet-test-404-not-found.jpg" alt="" width="600">
+
+### Actuator & Health Check
+
+Used Spring Actuator for health check.
+
+`http://localhost:8081/actuator/health`
+
+`{ "status": "UP" }`
 
 ### Database
 
@@ -151,11 +149,16 @@ Used Swagger and Api-Docs for RestAPI endpoints.
 <img src="./docs/swagger-ui.jpg" alt="" width="600">
 
 
-## Notes & Scenario
+### Notes
 
-**Scenario:** Create a new customer, create a new flight and customer books this flight
+- **MapStruct** is used for mapping between DTOs.
+- **Lombok** is used for autogenerate boilerplate zero-value codes.
 
-...
+### Scenario
+
+**Scenario 1:** Create a new customer, create a new flight and customer books this flight
+
+... TO DO ...
 
 
 ## References
@@ -165,3 +168,8 @@ Used Swagger and Api-Docs for RestAPI endpoints.
 
 ## License
 Flight Booking API is developed under the [MIT License](LICENSE).
+
+
+**Görkem Taşçı**, 2021
+
+LinkedIn: https://www.linkedin.com/in/tascigorkem/
